@@ -38,8 +38,7 @@ def post():
         session["username"] = request.form["username"]
         
     myname = session.get('username')
-    member_list2.append(myname) 
-    #member_list3.append(2,username)
+    member_list2.append(request.form["username"]) 
 
     return render_template('member_list.html', member_list2 =member_list2 , val = 0 , myname = myname)
 
