@@ -32,6 +32,8 @@ def reset1():
 @app.route("/index",methods=["post"])
 def post():
 
+    global member_list2
+
     if "username" not in session:
         session["username"] = request.form["username"]
         
@@ -46,6 +48,7 @@ def odai_warifuri():
     #お題割り振り処理
     global member_vote_list
     global global_ulfnum
+    global member_list2
     
     myname = session.get('username')
     
@@ -70,6 +73,7 @@ def odai_warifuri():
  ## お題配信する
 @app.route("/odaihaishin",methods=["post"])
 def odai_haishin():
+     global member_list2
      myname = session.get('username')
      print("ウルフNo→→　　",global_ulfnum)
      print("request.form['action'] →→　　",int(request.form['action']))
@@ -101,6 +105,7 @@ def vote_result():
 ## メンバー一覧ページ　
 @app.route('/memberlist')
 def load_member_list():
+    global member_list2
     myname = session.get('username')
     return render_template('member_list.html',member_list2 =member_list2,myname = myname)
 
