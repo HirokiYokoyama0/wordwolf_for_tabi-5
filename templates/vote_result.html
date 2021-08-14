@@ -1,7 +1,7 @@
 {% extends 'base.html' %}
 {% block content %}
 
-<meta http-equiv="refresh" content="2;URL={{ url_for('result') }}">
+<meta http-equiv="refresh" content="6;URL={{ url_for('result') }}">
 <p> 私のユーザ名は　{{myname}}　です </p>
 
 
@@ -31,7 +31,9 @@
 
 {% endfor %}
 #}
+<br>
+<br>
 
-
+<a href="{{ url_for('load_member_list') }}">同じメンバーで続ける</a>
 
 {% endblock %}

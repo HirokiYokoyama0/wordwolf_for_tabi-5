@@ -14,12 +14,21 @@ global member_vote_list
 @app.route('/') # メインページ
 def main():
    
-    if "username" in session:  # セッション情報があれば削除
+     return render_template('main.html')
+
+@app.route('/reset1',methods=["post"]) # リセット
+def reset1():
+   global member_list2
+   global global_ulfnum
+   if "username" in session:  # セッション情報があれば削除
         session.pop('username', None)
-
     
-    return render_template('main.html')
-
+   member_list2.clear
+   member_list2 =[]
+   global_ulfnum = 0
+    
+   return render_template('main.html',member_list2 = member_list2)
+    
 @app.route("/index",methods=["post"])
 def post():
 
