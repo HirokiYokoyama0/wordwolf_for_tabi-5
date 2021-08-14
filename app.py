@@ -1,11 +1,12 @@
 from flask import Flask, render_template, redirect, url_for,request
+
+
 import random
 
 from flask.globals import session
 
 app = Flask(__name__)
 app.secret_key = 'yokoyama' # secret key
-
 
 member_list2 = []
 global_ulfnum = 0
@@ -18,11 +19,12 @@ def main():
 
 @app.route('/reset1',methods=["post"]) # リセット
 def reset1():
-   global member_list2
+   
    global global_ulfnum
    if "username" in session:  # セッション情報があれば削除
         session.pop('username', None)
-    
+
+   member_list2 = session.get('member_list2')
    member_list2.clear
    member_list2 =[]
    global_ulfnum = 0
@@ -37,7 +39,9 @@ def post():
         
     myname = session.get('username')
     member_list2.append(request.form["username"]) 
-
+    
+    session['member_list2'] = member_list2 #session に格納
+  
     return render_template('member_list.html', member_list2 =member_list2 , val = 0 , myname = myname)
 
 @app.route("/prepare",methods=["post"]) # 開始準備確認
@@ -48,14 +52,13 @@ def odai_warifuri():
 
     
     myname = session.get('username')
+    member_list2 = session.get('member_list2')
     
     if myname is None:
         print("ユーザ名がNoneになってしまっています")
         flg_none = '1'
     else:
         flg_none = '0'
-    
-
     
     listsize = len(member_list2)
     global_ulfnum = random.randint(1,listsize) #ここでウルフを決定する.
@@ -102,8 +105,10 @@ def vote_result():
 ## メンバー一覧ページ　
 @app.route('/memberlist')
 def load_member_list():
- 
+    
     myname = session.get('username')
+    member_list2 = session.get('member_list2')
+    #print("member_list2===> " ,member_list2)
     return render_template('member_list.html',member_list2 =member_list2,myname = myname)
 
 ## お題割り振りページ　
