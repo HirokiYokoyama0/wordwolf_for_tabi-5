@@ -1,0 +1,42 @@
+{% extends 'base.html' %}
+{% block content %}
+<p> 私のユーザ名は　{{myname}}　です </p>
+
+<!-- #region 
+<meta http-equiv="refresh" content="2;URL={{ url_for('load_member_list') }}">
+-->
+
+<p> 参加者は　</p>
+{% for member in member_list2 %}
+<p>
+    {{ member }} さん
+    
+</p>
+{% endfor %}
+
+
+<p>このメンバーで開始しますか？（親の人のみ押してください）</p>
+<form action="/prepare" method="POST">
+	<input class="submit-button" value="開始する" type="submit" id="button1" onsubmit=" func1()">
+</form>
+
+<br>
+<br>
+
+<a href="{{ url_for('memberlist_prepare') }}">親以外のこちらをクリック</a>
+
+<script>
+    function func1() {
+      document.getElementById("button1").disabled = true;
+      <a href="{{ url_for('memberlist_prepare') }}">親以外の方はこちらをクリック</a>
+      return;
+    }
+
+</script>
+
+
+<br>
+<br>
+
+
+{% endblock %}

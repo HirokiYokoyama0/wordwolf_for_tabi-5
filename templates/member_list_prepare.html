@@ -1,0 +1,32 @@
+{% extends 'base.html' %}
+{% block content %}
+
+<p> 私のユーザ名は　{{myname}}　です</p>
+
+<p>お題を配ります。自分の名前のボタンを押してください</p>
+
+
+{% for member in member_list2 %}
+    {% if flg_none == '1' %}
+    <p>
+         {{ loop.index }} .  {{ member }}  さん　↓
+                <form action="/odaihaishin" method="POST">
+                <button type = "submit" name = "action" value = {{ loop.index }} > {{ member }} さんのお題をみる</button>
+                </form>
+    </p>
+
+    {% elif member == myname %}
+    <p>
+        {{ loop.index }} .  {{ member }}  さん　↓
+               <form action="/odaihaishin" method="POST">
+               <button type = "submit" name = "action" value = {{ loop.index }} > {{ member }} さんのお題をみる</button>
+               </form>
+   </p>
+    {% else %}
+
+    {% endif %}
+
+{% endfor %}
+
+
+{% endblock %}

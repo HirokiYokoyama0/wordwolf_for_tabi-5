@@ -1,0 +1,37 @@
+{% extends 'base.html' %}
+{% block content %}
+
+<meta http-equiv="refresh" content="2;URL={{ url_for('result') }}">
+<p> 私のユーザ名は　{{myname}}　です </p>
+
+
+<p> 投票結果 </p>
+
+<!--コメントアウト
+<p>配列：{{ member_vote_list|e }}</p> 
+-->
+
+{% for member in member_list2 %}
+
+　{# {{loop.index}}番目の #}
+　{{ member }} さん　 {{ member_vote_list[loop.index0] }} 票
+<br>
+
+{% endfor %}
+
+<br>
+<br>
+
+<p> 今回のウルフは 　<strong>　{{ulf_of_name}}　</strong>　 さんでした。 </p>
+
+{#    
+{% for votenum in member_vote_list %}
+
+  {{ votenum }} 票
+
+{% endfor %}
+#}
+
+
+
+{% endblock %}

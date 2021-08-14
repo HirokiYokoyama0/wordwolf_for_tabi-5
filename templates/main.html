@@ -1,0 +1,12 @@
+{% extends 'base.html' %}
+{% block content %}
+
+<p>ユーザ名を入力する画面です。</p>
+
+<form action="/index" method="POST">
+        <input type="text" name="username" placeholder="Enter name">
+        <input type="submit" value="Submit">
+</form>
+
+
+{% endblock %}

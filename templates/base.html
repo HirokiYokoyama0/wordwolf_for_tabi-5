@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html lang="ja">
+    <head>
+        <meta charset="utf-8">
+        <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css" integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh" crossorigin="anonymous">
+        <title>ワードウルフへようこそ</title>
+    </head>
+    <body>
+        <nav class="navbar navbar-expand-lg navbar-light bg-light">
+            <a class="navbar-brand" href="{{ url_for('main') }}">Main</a>
+            <a class="navbar-brand" href="{{ url_for('load_member_list') }}">参加メンバ一覧(更新)</a>
+            <a class="navbar-brand" href="{{ url_for('memberlist_prepare') }}">お題割り振り</a>
+            <a class="navbar-brand" href="{{ url_for('result') }}">結果</a>
+            <a class="navbar-brand" href="{{ url_for('terms_of_service') }}">利用規約</a>
+        </nav>
+        <div class="jumbotron">
+            <h3>　（お試し版）ワードウルフの世界へようこそ　</h3>
+        </div>
+       
+        <div class="container">
+            {% block content %}
+            {% endblock %}
+        </div>
+
+        <img src="../static/image/aaa.jpg" alt="ウルフ✗">
+    </body>
+</html>
