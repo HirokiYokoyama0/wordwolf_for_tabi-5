@@ -58,7 +58,9 @@ def post():
     #db.session.commit()
 
     MemberList_DB = db.session.query(MemberList).all() #デバッグ用
-    print("kokokara MemberList_DB --->",MemberList_DB ,"\n") #デバッグ用
+    #print("kokokara MemberList_DB --->",MemberList_DB ,"\n") #デバッグ用
+    #print("kokokara MemberList_DB[0] --->",MemberList_DB[0] ,"\n") #デバッグ用
+    #print("kokokara MemberList_DB[0].username --->",MemberList_DB[0].username ,"\n") #デバッグ用
   
     return render_template('member_list.html', member_list =member_list , val = 0 , myname = myname ,MemberList_DB = MemberList_DB)
 
@@ -88,6 +90,7 @@ def odai_warifuri():
 
     
     myname = session.get('username')
+    MemberList_DB = db.session.query(MemberList).all()
     
     if myname is None:
         print("ユーザ名がNoneになってしまっています")
@@ -95,14 +98,17 @@ def odai_warifuri():
     else:
         flg_none = '0'
     
-    listsize = len(member_list)
+    #listsize = len(member_list)
+
+    listsize  = len(MemberList_DB)
+  
     global_ulfnum = random.randint(1,listsize) #ここでウルフを決定する.
     member_vote_list =[0] * listsize #投票結果をリセット
      #デバッグモード print("投票数値リスト→",member_vote_list) 
      #デバッグモード print([member_list], listsize ,global_ulfnum,member_list[global_ulfnum-1]) 
-    print("ウルフNO → ",global_ulfnum,"ウルフ名 → ",member_list[global_ulfnum-1]) 
+    print("ウルフNO → ",global_ulfnum,"ウルフ名 → ",MemberList_DB[global_ulfnum-1].username) 
 
-    return render_template('member_list_prepare.html',member_list =member_list, myname = myname , flg_none = flg_none )
+    return render_template('member_list_prepare.html',member_list =member_list, myname = myname , flg_none = flg_none ,MemberList_DB = MemberList_DB )
 
 
  ## お題配信する
@@ -110,35 +116,37 @@ def odai_warifuri():
 def odai_haishin():
      
      myname = session.get('username')
+     MemberList_DB = db.session.query(MemberList).all() #DBからメンバーリストを割り当てる
 
      print("ウルフNo→→　　",global_ulfnum)
      print("request.form['action'] →→　　",int(request.form['action']))
      if int(request.form['action']) == global_ulfnum: #ウルフのときの処理
             wordtheme = "ウルフ"
-            return render_template('odai.html',wordtheme = wordtheme,member_list =member_list,myname = myname)
+            return render_template('odai.html',wordtheme = wordtheme,myname = myname,MemberList_DB = MemberList_DB)
     
      else:                                       #市民のときの処理
             wordtheme = "市民"
-            return render_template('odai.html',wordtheme = wordtheme,member_list =member_list,myname = myname)
+            return render_template('odai.html',wordtheme = wordtheme,myname = myname,MemberList_DB = MemberList_DB)
 
 ## 投票結果 
 @app.route('/vote', methods=['POST']) 
 def vote_result():
     
     myname = session.get('username')
+    MemberList_DB = db.session.query(MemberList).all() #DBからメンバーリストを割り当てる
 
     global ulf_of_name
     votenumber = int(request.form.get('sel'))
     print("投票",votenumber)  #デバッグモード
     print("ウルフNo    →→　　",global_ulfnum)
     print("投票数値リスト→",member_vote_list)  #デバッグモード
-    #member_vote_list[3] = 1
+    
     member_vote_list[votenumber-1] = member_vote_list[votenumber-1] + 1
     print("投票数値リスト(更新)→",member_vote_list)  #デバッグモード
 
-    ulf_of_name = member_list[global_ulfnum-1] #ウルフの人の名前を代入
+    ulf_of_name = MemberList_DB[global_ulfnum-1].username #ウルフの人の名前を代入
     
-    return render_template('vote_result.html',member_list =member_list,member_vote_list = member_vote_list,ulf_of_name = ulf_of_name,myname = myname)
+    return render_template('vote_result.html',member_vote_list = member_vote_list,ulf_of_name = ulf_of_name,myname = myname,MemberList_DB = MemberList_DB)
 
 ## メンバー一覧ページ　
 @app.route('/memberlist')
@@ -154,6 +162,7 @@ def load_member_list():
 def memberlist_prepare():
 
     myname = session.get('username')
+    MemberList_DB = db.session.query(MemberList).all()
     
     if myname is None:
         print("ユーザ名がNoneになってしまっています")
@@ -161,14 +170,15 @@ def memberlist_prepare():
     else:
         flg_none = '0'
 
-    return render_template('member_list_prepare.html',member_list =member_list,myname = myname,flg_none = flg_none)
+    return render_template('member_list_prepare.html',member_list =member_list,myname = myname,flg_none = flg_none,MemberList_DB = MemberList_DB)
 
 ## 投票結果　
 @app.route('/result')
 def result():
     myname = session.get('username')
+    MemberList_DB = db.session.query(MemberList).all() #DBからメンバーリストを割り当てる
 
-    return render_template('vote_result.html',member_list =member_list,member_vote_list = member_vote_list,ulf_of_name = ulf_of_name,myname = myname)
+    return render_template('vote_result.html',member_vote_list = member_vote_list,ulf_of_name = ulf_of_name,myname = myname,MemberList_DB =MemberList_DB)
 
 ## 利用規約
 @app.route('/terms') 

@@ -6,24 +6,26 @@
 <p>お題を配ります。自分の名前のボタンを押してください</p>
 
 
-{% for member in member_list %}
+{% for member in MemberList_DB %}
     {% if flg_none == '1' %}
     <p>
-         {{ loop.index }} .  {{ member }}  さん　↓
+         {{ loop.index }} .  {{ member.username }}  さん　↓
                 <form action="/odaihaishin" method="POST">
-                <button type = "submit" name = "action" value = {{ loop.index }} > {{ member }} さんのお題をみる</button>
+                <button type = "submit" name = "action" value = {{ loop.index }} > {{ member.username }} さんのお題をみる</button>
                 </form>
     </p>
 
-    {% elif member == myname %}
+    {% elif member.username == myname %}
     <p>
-        {{ loop.index }} .  {{ member }}  さん　↓
+        {{ loop.index }} .  {{ member.username }}  さん　↓
                <form action="/odaihaishin" method="POST">
-               <button type = "submit" name = "action" value = {{ loop.index }} > {{ member }} さんのお題をみる</button>
+               <button type = "submit" name = "action" value = {{ loop.index }} > {{ member.username }} さんのお題をみる</button>
                </form>
    </p>
     {% else %}
-
+    
+    
+    
     {% endif %}
 
 {% endfor %}

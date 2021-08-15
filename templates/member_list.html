@@ -6,16 +6,7 @@
 <meta http-equiv="refresh" content="2;URL={{ url_for('load_member_list') }}">
 -->
 
-<p> 参加者は　</p>
-{% for member in member_list %}
-<p>
-    {{ member }} さん
-    
-</p>
-{% endfor %}
-
-
-<p> 参加者は(DB)　</p>
+<p> 参加者は--　</p>
 {% for member in MemberList_DB %}
 <p>
     {{ member.username }} さん

@@ -11,10 +11,10 @@
 <p>配列：{{ member_vote_list|e }}</p> 
 -->
 
-{% for member in member_list %}
+{% for member in MemberList_DB %}
 
 　{# {{loop.index}}番目の #}
-　{{ member }} さん　 {{ member_vote_list[loop.index0] }} 票
+　{{ member.username }} さん　 {{ member_vote_list[loop.index0] }} 票
 <br>
 
 {% endfor %}

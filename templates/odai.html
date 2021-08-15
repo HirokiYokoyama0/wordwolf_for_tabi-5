@@ -15,8 +15,8 @@
 <form action="/vote" method="POST" enctype="multipart/form-data">
     <select name="sel">
         <option value="null" disabled selected>選択して下さい</option>
-        {% for member in member_list %}
-        <option value= {{ loop.index }}>{{member}}</option>
+        {% for member in MemberList_DB %}
+        <option value= {{ loop.index }}>{{member.username}}</option>
         {% endfor %}
     </select>
     <div>
