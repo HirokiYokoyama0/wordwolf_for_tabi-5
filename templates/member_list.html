@@ -15,6 +15,15 @@
 {% endfor %}
 
 
+<p> 参加者は(DB)　</p>
+{% for member in MemberList_DB %}
+<p>
+    {{ member.username }} さん
+    
+</p>
+{% endfor %}
+
+
 <p>このメンバーで開始しますか？（親の人のみ押してください）</p>
 <form action="/prepare" method="POST">
 	<input class="submit-button" value="開始する" type="submit" id="button1" onsubmit=" func1()">

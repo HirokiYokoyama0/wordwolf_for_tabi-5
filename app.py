@@ -1,12 +1,31 @@
 from flask import Flask, render_template, redirect, url_for,request
-
-
+#from models.models import db, MemberList #class名
 import random
+from flask_sqlalchemy import SQLAlchemy ###
 
 from flask.globals import session
 
+
 app = Flask(__name__)
 app.secret_key = 'yokoyama' # secret key
+app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///db.memberlist' ###
+app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False ###
+
+db = SQLAlchemy(app) ###
+
+class MemberList(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    username = db.Column(db.Text, nullable=False)
+    comment = db.Column(db.String(128), nullable=False)
+
+    def __init__(self, username=None, comment=None):
+        self.username = username
+        self.comment = comment
+
+    def __repr__(self):
+        #return '<UserName: %r  ' % (self.username)
+        return f"id = {self.id}, username={self.username}"
+
 
 member_list =[] #global変数
 
@@ -27,8 +46,21 @@ def post():
     
     myname = session.get('username')
     member_list.append(request.form["username"]) 
+
+    new_member = MemberList(username=request.form["username"],comment="")
+    db.session.add(new_member)
+    db.session.commit()
+
+    #class型MemberListへ代入
+    #usr = MemberList(request.form["username"], 'はじめまして')
+    #print("user--->", usr)
+    #db.session.add(usr) # データを追加
+    #db.session.commit()
+
+    MemberList_DB = db.session.query(MemberList).all() #デバッグ用
+    print("kokokara MemberList_DB --->",MemberList_DB ,"\n") #デバッグ用
   
-    return render_template('member_list.html', member_list =member_list , val = 0 , myname = myname)
+    return render_template('member_list.html', member_list =member_list , val = 0 , myname = myname ,MemberList_DB = MemberList_DB)
 
 @app.route('/reset1',methods=["post"]) # リセット
 def reset1():
@@ -39,6 +71,9 @@ def reset1():
 
    member_list =[]
    global_ulfnum = 0
+
+   db.session.query(MemberList).delete()
+   db.session.commit()
 
     
    return render_template('main.html',member_list = member_list)
@@ -110,8 +145,9 @@ def vote_result():
 def load_member_list():
     
     myname = session.get('username')
+    MemberList_DB = db.session.query(MemberList).all()
     #print("member_list===> " ,member_list)
-    return render_template('member_list.html',member_list =member_list,myname = myname)
+    return render_template('member_list.html',member_list =member_list,myname = myname,MemberList_DB=MemberList_DB)
 
 ## お題割り振りページ　
 @app.route('/memberlist_prepare')
@@ -145,4 +181,5 @@ def redirect_main_page(error):
     return redirect(url_for('main'))
 
 if __name__ == '__main__':
+    #db.create_all()
     app.run(debug=True)
