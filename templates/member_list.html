@@ -6,7 +6,7 @@
 <meta http-equiv="refresh" content="2;URL={{ url_for('load_member_list') }}">
 -->
 
-<p> 参加者は--　</p>
+<p> 現在の参加メンバーは　</p>
 {% for member in MemberList_DB %}
 <p>
     {{ member.username }} さん
@@ -14,16 +14,26 @@
 </p>
 {% endfor %}
 
+<br>
+<br>
 
-<p>このメンバーで開始しますか？（親の人のみ押してください）</p>
+<p>このメンバーで開始しますか？（親の人のみが押してください）</p>
 <form action="/prepare" method="POST">
-	<input class="submit-button" value="開始する" type="submit" id="button1" onsubmit=" func1()">
+  <select name="genre_num">
+    <option value=1>ジャンル選択</option>
+    {% for genre in word_Genre %}
+    <option value= {{ loop.index }}>{{genre}}</option>
+    {% endfor %}
+  </select>
+  <input class="submit-button" value="開始する" type="submit" id="button1" onsubmit=" func1()">
 </form>
 
-<br>
+
 <br>
 
-<a href="{{ url_for('memberlist_prepare') }}">親以外のこちらをクリック</a>
+※親以外の人は、親の人が”開始する”ボタンを押したあとに、下記のリンクをクリックしてください
+<br>
+<a href="{{ url_for('memberlist_prepare') }}"><strong>親以外の人はこちらをクリック</strong></a>
 
 <script>
     function func1() {

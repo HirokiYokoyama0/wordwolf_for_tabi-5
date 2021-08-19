@@ -1,10 +1,10 @@
+from worddata_Excel import create_word
 from flask import Flask, render_template, redirect, url_for,request
 #from models.models import db, MemberList #class名
 import random
 from flask_sqlalchemy import SQLAlchemy ###
-
 from flask.globals import session
-
+import worddata_Excel #自作関数
 
 app = Flask(__name__)
 app.secret_key = 'yokoyama' # secret key
@@ -28,9 +28,16 @@ class MemberList(db.Model):
 
 
 member_list =[] #global変数
+word_data = [] #wordデータ格納用
+word_num = 0 #wordを選択番号
 
 global_ulfnum = 0
+genre_number = 0
+
+
 global member_vote_list
+word_Genre = ["一般","旅","食べ物"]
+
 
 @app.route('/') # メインページ
 def main():
@@ -61,8 +68,8 @@ def post():
     #print("kokokara MemberList_DB --->",MemberList_DB ,"\n") #デバッグ用
     #print("kokokara MemberList_DB[0] --->",MemberList_DB[0] ,"\n") #デバッグ用
     #print("kokokara MemberList_DB[0].username --->",MemberList_DB[0].username ,"\n") #デバッグ用
-  
-    return render_template('member_list.html', member_list =member_list , val = 0 , myname = myname ,MemberList_DB = MemberList_DB)
+    print("word_Genre[0]->",word_Genre[0])
+    return render_template('member_list.html', member_list =member_list , val = 0 , myname = myname ,MemberList_DB = MemberList_DB ,word_Genre = word_Genre)
 
 @app.route('/reset1',methods=["post"]) # リセット
 def reset1():
@@ -82,13 +89,14 @@ def reset1():
     
 
 
-@app.route("/prepare",methods=["post"]) # 開始準備確認
+@app.route("/prepare",methods=["post"]) # 開始準備確認/親だけが実行する処理
 def odai_warifuri(): 
     #お題割り振り処理
     global member_vote_list
     global global_ulfnum
+    global word_data
+    global word_num
 
-    
     myname = session.get('username')
     MemberList_DB = db.session.query(MemberList).all()
     
@@ -98,15 +106,22 @@ def odai_warifuri():
     else:
         flg_none = '0'
     
-    #listsize = len(member_list)
-
     listsize  = len(MemberList_DB)
-  
-    global_ulfnum = random.randint(1,listsize) #ここでウルフを決定する.
     member_vote_list =[0] * listsize #投票結果をリセット
-     #デバッグモード print("投票数値リスト→",member_vote_list) 
-     #デバッグモード print([member_list], listsize ,global_ulfnum,member_list[global_ulfnum-1]) 
+  
+    genre_number = int(request.form.get('genre_num'))
+    print("genre_number→",genre_number) 
+
+    global_ulfnum = random.randint(1,listsize) #ここでウルフを決定する.
+    
     print("ウルフNO → ",global_ulfnum,"ウルフ名 → ",MemberList_DB[global_ulfnum-1].username) 
+    
+    #### エクセルファイルからワードを引っ張ってくる処理（これも親だけの処理）
+    [word_data,word_max_row_num] = create_word() #wordデータ生成
+    word_num = random.randint(0,len(word_data)-1) #ランダムにワードデータを一つ選択
+    print("word_num-->",word_num)
+    print("word_data[word_num][0](市民)-->",word_data[word_num][0])
+    print("word_data[word_num][1]（ウルフ）-->",word_data[word_num][1])
 
     return render_template('member_list_prepare.html',member_list =member_list, myname = myname , flg_none = flg_none ,MemberList_DB = MemberList_DB )
 
@@ -118,14 +133,18 @@ def odai_haishin():
      myname = session.get('username')
      MemberList_DB = db.session.query(MemberList).all() #DBからメンバーリストを割り当てる
 
-     print("ウルフNo→→　　",global_ulfnum)
-     print("request.form['action'] →→　　",int(request.form['action']))
+     print("/odaihaishin ウルフNo→→　　",global_ulfnum)
+     #print("request.form['action'] →→　　",int(request.form['action']))
+     #print("word_data[word_num][0](市民)-->",word_data[word_num][0])
+     #print("word_data[word_num][1]（ウルフ）-->",word_data[word_num][1])
+
+
      if int(request.form['action']) == global_ulfnum: #ウルフのときの処理
-            wordtheme = "ウルフ"
+            wordtheme = word_data[word_num][0]
             return render_template('odai.html',wordtheme = wordtheme,myname = myname,MemberList_DB = MemberList_DB)
     
      else:                                       #市民のときの処理
-            wordtheme = "市民"
+            wordtheme = word_data[word_num][1]
             return render_template('odai.html',wordtheme = wordtheme,myname = myname,MemberList_DB = MemberList_DB)
 
 ## 投票結果 
@@ -155,9 +174,9 @@ def load_member_list():
     myname = session.get('username')
     MemberList_DB = db.session.query(MemberList).all()
     #print("member_list===> " ,member_list)
-    return render_template('member_list.html',member_list =member_list,myname = myname,MemberList_DB=MemberList_DB)
+    return render_template('member_list.html',member_list =member_list,myname = myname,MemberList_DB=MemberList_DB, word_Genre = word_Genre)
 
-## お題割り振りページ　
+## お題割り振りページ　（親以外のリンク用）
 @app.route('/memberlist_prepare')
 def memberlist_prepare():
 
@@ -170,7 +189,12 @@ def memberlist_prepare():
     else:
         flg_none = '0'
 
-    return render_template('member_list_prepare.html',member_list =member_list,myname = myname,flg_none = flg_none,MemberList_DB = MemberList_DB)
+    if global_ulfnum == 0:
+        print("まだ親の人が開始ボタンを教えていません")
+        return redirect(url_for('load_member_list'))
+    else:
+        return render_template('member_list_prepare.html',member_list =member_list,myname = myname,flg_none = flg_none,MemberList_DB = MemberList_DB)
+   
 
 ## 投票結果　
 @app.route('/result')
