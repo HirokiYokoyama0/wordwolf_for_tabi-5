@@ -51,7 +51,8 @@ def post():
         session["username"] = request.form["username"]
 
     
-    myname = session.get('username')
+    #myname = session.get('username')
+    myname = request.form["username"]
     member_list.append(request.form["username"]) 
 
     new_member = MemberList(username=request.form["username"],comment="")
