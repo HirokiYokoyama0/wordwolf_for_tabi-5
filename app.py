@@ -51,8 +51,8 @@ def post():
         session["username"] = request.form["username"]
 
     
-    #myname = session.get('username')
-    myname = request.form["username"]
+    myname = session.get('username')
+    #myname = request.form["username"]
     member_list.append(request.form["username"]) 
 
     new_member = MemberList(username=request.form["username"],comment="")
@@ -79,6 +79,7 @@ def reset1():
    if "username" in session:  # セッション情報があれば削除
         session.pop('username', None)
 
+   session.clear
    member_list =[]
    global_ulfnum = 0
 
