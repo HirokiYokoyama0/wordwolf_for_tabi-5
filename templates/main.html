@@ -5,18 +5,32 @@
 
 <p>ユーザ名を入力してください</p>
 <form action="/index" method="POST">
-        <input type="text" name="username" placeholder="Enter name">
-        <input type="submit" value="Submit">
+        <input type="text" name="username" placeholder="Enter name" required>
+        <input type="submit" value="登録">
 </form>
 
 
 <br>
 <br>
 
-<p>★ゲームリセット</p>
+{% if checkflg == 1  %}
+<p>★セッションリセット</p>
+ユーザ名が残っているのでは、リセットボタンを押してから
+登録してください。
+
+<form action="/reset2" method="POST">
+	<input class="submit-button" value="リセット" type="submit" >
+</form>
+
+{% endif %}
+
+<br>
+<br>
+
+<p>★ゲームリセット（ユーザリスト削除）</p>
 
 <form action="/reset1" method="POST">
-	<input class="submit-button" value="リセット" type="submit" >
+	<input class="submit-button" value="完全リセット" type="submit" >
 </form>
 
 <br>

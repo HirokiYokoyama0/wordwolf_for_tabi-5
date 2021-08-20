@@ -34,14 +34,21 @@ word_num = 0 #wordを選択番号
 global_ulfnum = 0
 genre_number = 0
 
+member_vote_list = [] #投票用のリスト
 
-global member_vote_list
 word_Genre = ["一般","旅","食べ物"]
 
 
 @app.route('/') # メインページ
 def main():
-    return render_template('main.html')
+    myname = session.get('username')
+
+    if myname  is None:
+        checkflg = 0
+    else:
+        checkflg = 1
+
+    return render_template('main.html',checkflg = checkflg)
 
 
 @app.route("/index",methods=["post"])
@@ -72,8 +79,8 @@ def post():
     print("word_Genre[0]->",word_Genre[0])
     return render_template('member_list.html', member_list =member_list , val = 0 , myname = myname ,MemberList_DB = MemberList_DB ,word_Genre = word_Genre)
 
-@app.route('/reset1',methods=["post"]) # リセット
-def reset1():
+@app.route('/reset2',methods=["post"]) # リセット
+def reset2():
    
    global global_ulfnum
    if "username" in session:  # セッション情報があれば削除
@@ -82,12 +89,25 @@ def reset1():
    session.clear
    member_list =[]
    global_ulfnum = 0
+    
+   return render_template('main.html')
+
+
+
+@app.route('/reset1',methods=["post"]) # リセット
+def reset1():
+   
+   global global_ulfnum
+   if "username" in session:  # セッション情報があれば削除
+        session.pop('username', None)
+
+   session.clear
+   global_ulfnum = 0
 
    db.session.query(MemberList).delete()
    db.session.commit()
 
-    
-   return render_template('main.html',member_list = member_list)
+   return render_template('main.html')
     
 
 
@@ -121,7 +141,7 @@ def odai_warifuri():
     #### エクセルファイルからワードを引っ張ってくる処理（これも親だけの処理）
     [word_data,word_max_row_num] = create_word() #wordデータ生成
     word_num = random.randint(0,len(word_data)-1) #ランダムにワードデータを一つ選択
-    print("word_num-->",word_num)
+    print("word_num,word_max_row_num -->",word_num,len(word_data)-1)
     print("word_data[word_num][0](市民)-->",word_data[word_num][0])
     print("word_data[word_num][1]（ウルフ）-->",word_data[word_num][1])
 
@@ -169,9 +189,36 @@ def vote_result():
     
     return render_template('vote_result.html',member_vote_list = member_vote_list,ulf_of_name = ulf_of_name,myname = myname,MemberList_DB = MemberList_DB)
 
+
+## ゲーム継続　→　メンバー一覧ページ　
+@app.route('/repeat')
+def game_repeat():
+
+    #リセット処理のため（継続のため）
+    global word_data #wordデータ格納用リセット
+    word_data = []
+    global word_num  #wordを選択番号
+    word_num = 0
+    global global_ulfnum
+    global_ulfnum = 0
+    global genre_number
+    genre_number = 0
+    global member_vote_list
+    member_vote_list = [] #投票用のリスト
+    
+    myname = session.get('username')
+    MemberList_DB = db.session.query(MemberList).all()
+    #print("member_list===> " ,member_list)
+    return render_template('member_list.html',member_list =member_list,myname = myname,MemberList_DB=MemberList_DB, word_Genre = word_Genre)
+
+
+
+
 ## メンバー一覧ページ　
 @app.route('/memberlist')
 def load_member_list():
+
+
     
     myname = session.get('username')
     MemberList_DB = db.session.query(MemberList).all()
