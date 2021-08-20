@@ -147,14 +147,14 @@ def odai_warifuri():
 
     global_ulfnum = random.randint(1,listsize) #ここでウルフを決定する.
     
-    print("ウルフNO → ",global_ulfnum,"ウルフ名 → ",MemberList_DB[global_ulfnum-1].username) 
+    #print("ウルフNO → ",global_ulfnum,"ウルフ名 → ",MemberList_DB[global_ulfnum-1].username) 
     
     #### エクセルファイルからワードを引っ張ってくる処理（これも親だけの処理）
     [word_data,word_max_row_num] = create_word() #wordデータ生成
     word_num = random.randint(0,len(word_data)-1) #ランダムにワードデータを一つ選択
-    print("word_num,word_max_row_num -->",word_num,len(word_data)-1)
-    print("word_data[word_num][0](市民)-->",word_data[word_num][0])
-    print("word_data[word_num][1]（ウルフ）-->",word_data[word_num][1])
+    #print("word_num,word_max_row_num -->",word_num,len(word_data)-1)
+    #print("word_data[word_num][0](市民)-->",word_data[word_num][0])
+    #print("word_data[word_num][1]（ウルフ）-->",word_data[word_num][1])
 
     return render_template('member_list_prepare.html',member_list =member_list, myname = myname , flg_none = flg_none ,MemberList_DB = MemberList_DB )
 
@@ -189,12 +189,12 @@ def vote_result():
 
     global ulf_of_name
     votenumber = int(request.form.get('sel'))
-    print("投票",votenumber)  #デバッグモード
-    print("ウルフNo    →→　　",global_ulfnum)
-    print("投票数値リスト→",member_vote_list)  #デバッグモード
+    #print("投票",votenumber)  #デバッグモード
+    #print("ウルフNo    →→　　",global_ulfnum)
+    #print("投票数値リスト→",member_vote_list)  #デバッグモード
     
     member_vote_list[votenumber-1] = member_vote_list[votenumber-1] + 1
-    print("投票数値リスト(更新)→",member_vote_list)  #デバッグモード
+    #print("投票数値リスト(更新)→",member_vote_list)  #デバッグモード
 
     ulf_of_name = MemberList_DB[global_ulfnum-1].username #ウルフの人の名前を代入
     
@@ -276,4 +276,4 @@ def redirect_main_page(error):
 
 if __name__ == '__main__':
     #db.create_all()
-    app.run(debug=True)
+    app.run(debug=False)
