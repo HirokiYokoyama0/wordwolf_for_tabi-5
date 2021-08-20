@@ -97,12 +97,23 @@ def reset2():
 @app.route('/reset1',methods=["post"]) # リセット
 def reset1():
    
-   global global_ulfnum
    if "username" in session:  # セッション情報があれば削除
         session.pop('username', None)
 
    session.clear
+
+   #リセット処理のため（継続のため）
+   global global_ulfnum
    global_ulfnum = 0
+   global word_data #wordデータ格納用リセット
+   word_data = []
+   global word_num  #wordを選択番号
+   word_num = 0
+   global_ulfnum = 0
+   global genre_number
+   genre_number = 0
+   global member_vote_list
+   member_vote_list = [] #投票用のリスト
 
    db.session.query(MemberList).delete()
    db.session.commit()
