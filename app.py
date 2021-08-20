@@ -189,12 +189,12 @@ def vote_result():
 
     global ulf_of_name
     votenumber = int(request.form.get('sel'))
-    #print("投票",votenumber)  #デバッグモード
+    print("投票",votenumber)  #デバッグモード
     #print("ウルフNo    →→　　",global_ulfnum)
-    #print("投票数値リスト→",member_vote_list)  #デバッグモード
+    print("投票数値リスト→",member_vote_list)  #デバッグモード
     
     member_vote_list[votenumber-1] = member_vote_list[votenumber-1] + 1
-    #print("投票数値リスト(更新)→",member_vote_list)  #デバッグモード
+    print("投票数値リスト(更新)→",member_vote_list)  #デバッグモード
 
     ulf_of_name = MemberList_DB[global_ulfnum-1].username #ウルフの人の名前を代入
     
@@ -223,14 +223,10 @@ def game_repeat():
     return render_template('member_list.html',member_list =member_list,myname = myname,MemberList_DB=MemberList_DB, word_Genre = word_Genre)
 
 
-
-
 ## メンバー一覧ページ　
 @app.route('/memberlist')
 def load_member_list():
 
-
-    
     myname = session.get('username')
     MemberList_DB = db.session.query(MemberList).all()
     #print("member_list===> " ,member_list)
@@ -276,4 +272,4 @@ def redirect_main_page(error):
 
 if __name__ == '__main__':
     #db.create_all()
-    app.run(debug=False)
+    app.run(debug=True)
