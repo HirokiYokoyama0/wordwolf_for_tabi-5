@@ -165,13 +165,15 @@ def odai_haishin():
      global word_data
      global global_ulfnum
      global word_num
-     
+
      myname = session.get('username')
      MemberList_DB = db.session.query(MemberList).all() #DBからメンバーリストを割り当てる
 
-     print("/odaihaishin ウルフNo→→　　",global_ulfnum)
+     print("/odaihaishinnai ウルフNo→→　　",global_ulfnum)
      #print("request.form['action'] →→　　",int(request.form['action']))
-     #print("word_data[word_num][0](市民)-->",word_data[word_num][0])
+     print("/odaihaishinnai word_num →→　　",word_num)
+
+     print("/odaihaishinnai word_data[word_num][0](市民)-->",word_data[word_num][0])
      #print("word_data[word_num][1]（ウルフ）-->",word_data[word_num][1])
 
 
@@ -238,7 +240,8 @@ def load_member_list():
 ## お題割り振りページ　（親以外のリンク用）
 @app.route('/memberlist_prepare')
 def memberlist_prepare():
-
+    global global_ulfnum
+    
     myname = session.get('username')
     MemberList_DB = db.session.query(MemberList).all()
     
