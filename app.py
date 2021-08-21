@@ -163,6 +163,9 @@ def odai_warifuri():
 @app.route("/odaihaishin",methods=["post"])
 def odai_haishin():
      global word_data
+     global global_ulfnum
+     global word_num
+     
      myname = session.get('username')
      MemberList_DB = db.session.query(MemberList).all() #DBからメンバーリストを割り当てる
 
