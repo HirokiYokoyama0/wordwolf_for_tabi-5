@@ -162,7 +162,7 @@ def odai_warifuri():
  ## お題配信する
 @app.route("/odaihaishin",methods=["post"])
 def odai_haishin():
-     
+     global word_data
      myname = session.get('username')
      MemberList_DB = db.session.query(MemberList).all() #DBからメンバーリストを割り当てる
 
@@ -183,7 +183,7 @@ def odai_haishin():
 ## 投票結果 
 @app.route('/vote', methods=['POST']) 
 def vote_result():
-    
+    global member_vote_list
     myname = session.get('username')
     MemberList_DB = db.session.query(MemberList).all() #DBからメンバーリストを割り当てる
 
