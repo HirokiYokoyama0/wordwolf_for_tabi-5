@@ -1,5 +1,7 @@
+from re import I
 from worddata_Excel import create_word
-from flask import Flask, render_template, redirect, url_for,request
+from flask import Flask, render_template, redirect, url_for,request,g
+
 #from models.models import db, MemberList #class名
 import random
 from flask_sqlalchemy import SQLAlchemy ###
@@ -8,33 +10,38 @@ import worddata_Excel #自作関数
 
 app = Flask(__name__)
 app.secret_key = 'yokoyama' # secret key
-app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///db.memberlist' ###
+app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///db_memberlist.sqlite' ###
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False ###
 
 db = SQLAlchemy(app) ###
+db2 = SQLAlchemy(app) ###
 
 class MemberList(db.Model):
+    __tablename__ = 'players'
     id = db.Column(db.Integer, primary_key=True)
     username = db.Column(db.Text, nullable=False)
     comment = db.Column(db.String(128), nullable=False)
+    vote_num = db.Column(db.Integer, nullable=False)
+    ulf_flg = db.Column(db.Integer, nullable=False)
 
-    def __init__(self, username=None, comment=None):
+    def __init__(self, username=None, comment=None, vote_num = 0 , ulf_flg = 0):
         self.username = username
         self.comment = comment
+        self.vote_num = vote_num
+        self.ulf_flg = ulf_flg
+
+
 
     def __repr__(self):
         #return '<UserName: %r  ' % (self.username)
         return f"id = {self.id}, username={self.username}"
 
 
-member_list =[] #global変数
 word_data = [] #wordデータ格納用
 word_num = 0 #wordを選択番号
 
 global_ulfnum = 0
 genre_number = 0
-
-member_vote_list = [] #投票用のリスト
 
 word_Genre = ["一般","旅","食べ物"]
 
@@ -59,10 +66,8 @@ def post():
 
     
     myname = session.get('username')
-    #myname = request.form["username"]
-    member_list.append(request.form["username"]) 
 
-    new_member = MemberList(username=request.form["username"],comment="")
+    new_member = MemberList(username=request.form["username"],comment="",vote_num = 0 , ulf_flg = 0)
     db.session.add(new_member)
     db.session.commit()
 
@@ -75,9 +80,13 @@ def post():
     MemberList_DB = db.session.query(MemberList).all() #デバッグ用
     #print("kokokara MemberList_DB --->",MemberList_DB ,"\n") #デバッグ用
     #print("kokokara MemberList_DB[0] --->",MemberList_DB[0] ,"\n") #デバッグ用
-    #print("kokokara MemberList_DB[0].username --->",MemberList_DB[0].username ,"\n") #デバッグ用
-    print("word_Genre[0]->",word_Genre[0])
-    return render_template('member_list.html', member_list =member_list , val = 0 , myname = myname ,MemberList_DB = MemberList_DB ,word_Genre = word_Genre)
+    for member in MemberList_DB:
+        print("------- MemberList_DB.vote_num --->",member.vote_num) #デバッグ用
+        print("------- MemberList_DB.username --->",member.username) #デバッグ用
+    
+    
+    #print("word_Genre[0]->",word_Genre[0])
+    return render_template('member_list.html',MemberList_DB = MemberList_DB, val = 0 , myname = myname  ,word_Genre = word_Genre)
 
 @app.route('/reset2',methods=["post"]) # リセット
 def reset2():
@@ -87,11 +96,9 @@ def reset2():
         session.pop('username', None)
 
    session.clear
-   member_list =[]
    global_ulfnum = 0
     
    return render_template('main.html')
-
 
 
 @app.route('/reset1',methods=["post"]) # リセット
@@ -102,7 +109,7 @@ def reset1():
 
    session.clear
 
-   #リセット処理のため（継続のため）
+   #リセット処理のため
    global global_ulfnum
    global_ulfnum = 0
    global word_data #wordデータ格納用リセット
@@ -112,10 +119,8 @@ def reset1():
    global_ulfnum = 0
    global genre_number
    genre_number = 0
-   global member_vote_list
-   member_vote_list = [] #投票用のリスト
 
-   db.session.query(MemberList).delete()
+   db.session.query(MemberList).delete() #メンバーリストを削除 
    db.session.commit()
 
    return render_template('main.html')
@@ -125,7 +130,6 @@ def reset1():
 @app.route("/prepare",methods=["post"]) # 開始準備確認/親だけが実行する処理
 def odai_warifuri(): 
     #お題割り振り処理
-    global member_vote_list
     global global_ulfnum
     global word_data
     global word_num
@@ -139,15 +143,15 @@ def odai_warifuri():
     else:
         flg_none = '0'
     
-    listsize  = len(MemberList_DB)
-    member_vote_list =[0] * listsize #投票結果をリセット
-  
     genre_number = int(request.form.get('genre_num'))
     print("genre_number→",genre_number) 
 
+    listsize  = len(MemberList_DB) #全体人数を取得する
+
     global_ulfnum = random.randint(1,listsize) #ここでウルフを決定する.
-    
-    #print("ウルフNO → ",global_ulfnum,"ウルフ名 → ",MemberList_DB[global_ulfnum-1].username) 
+    MemberList_DB[global_ulfnum-1].ulf_flg = 1
+    db.session.commit()
+    print("ウルフNO → ",global_ulfnum,"ウルフ名 → ",MemberList_DB[global_ulfnum-1].username) 
     
     #### エクセルファイルからワードを引っ張ってくる処理（これも親だけの処理）
     [word_data,word_max_row_num] = create_word() #wordデータ生成
@@ -156,7 +160,7 @@ def odai_warifuri():
     #print("word_data[word_num][0](市民)-->",word_data[word_num][0])
     #print("word_data[word_num][1]（ウルフ）-->",word_data[word_num][1])
 
-    return render_template('member_list_prepare.html',member_list =member_list, myname = myname , flg_none = flg_none ,MemberList_DB = MemberList_DB )
+    return render_template('member_list_prepare.html', MemberList_DB = MemberList_DB, myname = myname , flg_none = flg_none )
 
 
  ## お題配信する
@@ -170,40 +174,37 @@ def odai_haishin():
      MemberList_DB = db.session.query(MemberList).all() #DBからメンバーリストを割り当てる
 
      print("/odaihaishinnai ウルフNo→→　　",global_ulfnum)
-     #print("request.form['action'] →→　　",int(request.form['action']))
      print("/odaihaishinnai word_num →→　　",word_num)
-
      print("/odaihaishinnai word_data[word_num][0](市民)-->",word_data[word_num][0])
-     #print("word_data[word_num][1]（ウルフ）-->",word_data[word_num][1])
+
+     if int(request.form['action']) == global_ulfnum:
+            wordtheme = word_data[word_num][0] #ウルフのときのお題配信処理
+     else:                                       
+            wordtheme = word_data[word_num][1] #市民のときのお題配信処理
 
 
-     if int(request.form['action']) == global_ulfnum: #ウルフのときの処理
-            wordtheme = word_data[word_num][0]
-            return render_template('odai.html',wordtheme = wordtheme,myname = myname,MemberList_DB = MemberList_DB)
-    
-     else:                                       #市民のときの処理
-            wordtheme = word_data[word_num][1]
-            return render_template('odai.html',wordtheme = wordtheme,myname = myname,MemberList_DB = MemberList_DB)
-
+     return render_template('odai.html',MemberList_DB = MemberList_DB,wordtheme = wordtheme,myname = myname)
 ## 投票結果 
 @app.route('/vote', methods=['POST']) 
 def vote_result():
-    global member_vote_list
+ 
     myname = session.get('username')
     MemberList_DB = db.session.query(MemberList).all() #DBからメンバーリストを割り当てる
+    content = db.session.query(MemberList).filter_by(id=int(request.form.get('sel'))).first()
 
-    global ulf_of_name
-    votenumber = int(request.form.get('sel'))
-    print("投票",votenumber)  #デバッグモード
-    #print("ウルフNo    →→　　",global_ulfnum)
-    print("投票数値リスト→",member_vote_list)  #デバッグモード
-    
-    member_vote_list[votenumber-1] = member_vote_list[votenumber-1] + 1
-    print("投票数値リスト(更新)→",member_vote_list)  #デバッグモード
+    #print("content[0].vote_num",content.vote_num)  #デバッグモード
+    #print("MemberList_DB[0].vote_num",MemberList_DB[0].vote_num)  #デバッグモード
 
+    content.vote_num = content.vote_num + 1
+    db.session.commit()
+    #print("content[0].vote_num コミット後",content.vote_num)  #デバッグモード
+
+    #alldata = db.session.query(MemberList).all()
+    #print("alldata--->",alldata)
+    global global_ulfnum
     ulf_of_name = MemberList_DB[global_ulfnum-1].username #ウルフの人の名前を代入
     
-    return render_template('vote_result.html',member_vote_list = member_vote_list,ulf_of_name = ulf_of_name,myname = myname,MemberList_DB = MemberList_DB)
+    return render_template('vote_result.html',MemberList_DB = MemberList_DB,ulf_of_name = ulf_of_name,myname = myname)
 
 
 ## ゲーム継続　→　メンバー一覧ページ　
@@ -219,13 +220,17 @@ def game_repeat():
     global_ulfnum = 0
     global genre_number
     genre_number = 0
-    global member_vote_list
-    member_vote_list = [] #投票用のリスト
     
     myname = session.get('username')
     MemberList_DB = db.session.query(MemberList).all()
-    #print("member_list===> " ,member_list)
-    return render_template('member_list.html',member_list =member_list,myname = myname,MemberList_DB=MemberList_DB, word_Genre = word_Genre)
+    
+    for member in MemberList_DB:
+        member.vote_num=0
+        member.ulf_flg=0
+
+    db.session.commit()
+    
+    return render_template('member_list.html',MemberList_DB=MemberList_DB,myname = myname, word_Genre = word_Genre)
 
 
 ## メンバー一覧ページ　
@@ -234,8 +239,7 @@ def load_member_list():
 
     myname = session.get('username')
     MemberList_DB = db.session.query(MemberList).all()
-    #print("member_list===> " ,member_list)
-    return render_template('member_list.html',member_list =member_list,myname = myname,MemberList_DB=MemberList_DB, word_Genre = word_Genre)
+    return render_template('member_list.html',MemberList_DB=MemberList_DB,myname = myname, word_Genre = word_Genre)
 
 ## お題割り振りページ　（親以外のリンク用）
 @app.route('/memberlist_prepare')
@@ -255,7 +259,7 @@ def memberlist_prepare():
         print("まだ親の人が開始ボタンを教えていません")
         return redirect(url_for('load_member_list'))
     else:
-        return render_template('member_list_prepare.html',member_list =member_list,myname = myname,flg_none = flg_none,MemberList_DB = MemberList_DB)
+        return render_template('member_list_prepare.html',MemberList_DB = MemberList_DB,myname = myname,flg_none = flg_none)
    
 
 ## 投票結果　
@@ -264,7 +268,9 @@ def result():
     myname = session.get('username')
     MemberList_DB = db.session.query(MemberList).all() #DBからメンバーリストを割り当てる
 
-    return render_template('vote_result.html',member_vote_list = member_vote_list,ulf_of_name = ulf_of_name,myname = myname,MemberList_DB =MemberList_DB)
+    global global_ulfnum
+    ulf_of_name = MemberList_DB[global_ulfnum-1].username #ウルフの人の名前を代入
+    return render_template('vote_result.html',MemberList_DB =MemberList_DB,ulf_of_name = ulf_of_name,myname = myname)
 
 ## 利用規約
 @app.route('/terms') 

@@ -18,7 +18,7 @@
 {% for member in MemberList_DB %}
 
 　{# {{loop.index}}番目の #}
-　{{ member.username }} さん　 {{ member_vote_list[loop.index0] }} 票
+　{{ member.username }} さん　          {{ member.vote_num }} 票
 <br>
 
 {% endfor %}
