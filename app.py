@@ -23,12 +23,15 @@ class MemberList(db.Model):
     comment = db.Column(db.String(128), nullable=False)
     vote_num = db.Column(db.Integer, nullable=False)
     ulf_flg = db.Column(db.Integer, nullable=False)
+    to_vote = db.Column(db.Integer, nullable=False)
 
-    def __init__(self, username=None, comment=None, vote_num = 0 , ulf_flg = 0):
+    def __init__(self, username=None, comment=None, vote_num = 0 , ulf_flg = 0 ,to_vote = 0):
         self.username = username
         self.comment = comment
         self.vote_num = vote_num
         self.ulf_flg = ulf_flg
+        self.to_vote = to_vote
+
     def __repr__(self):
         #return '<UserName: %r  ' % (self.username)
         return f"id = {self.id}, username={self.username}"
@@ -85,7 +88,7 @@ def post():
     
     myname = session.get('username')
 
-    new_member = MemberList(username=request.form["username"],comment="",vote_num = 0 , ulf_flg = 0)
+    new_member = MemberList(username=request.form["username"],comment="",vote_num = 0 , ulf_flg = 0, to_vote = 0)
     db.session.add(new_member)
     db.session.commit()
 
@@ -223,6 +226,11 @@ def vote_result():
     #print("MemberList_DB[0].vote_num",MemberList_DB[0].vote_num)  #デバッグモード
 
     content.vote_num = content.vote_num + 1
+    content2 = db.session.query(MemberList).filter_by(username = myname).first()
+    print("content---->",content)
+    print("content2---->",content2)
+    content2.to_vote = int(request.form.get('sel')) #誰に投票したかを入力
+
     db.session.commit()
     #print("content[0].vote_num コミット後",content.vote_num)  #デバッグモード
 

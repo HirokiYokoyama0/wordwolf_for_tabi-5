@@ -19,6 +19,14 @@
 
 　{# {{loop.index}}番目の #}
 　{{ member.username }} さん　          {{ member.vote_num }} 票
+　
+投票したのは　
+  {% for member2 in MemberList_DB %}
+  {% if  member.id ==  member2.to_vote  %}
+   {{ member2.username }} さん　
+  {% endif %}
+  {% endfor %}
+
 <br>
 
 {% endfor %}
