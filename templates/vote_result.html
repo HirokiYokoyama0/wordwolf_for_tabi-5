@@ -46,6 +46,19 @@
 <br>
 <br>
 
+今回のウルフの人は
+  {% for member3 in MemberList_DB %}
+  {% if  member3.ulf_flg ==  1  %}
+  <strong> {{ member3.username }} さん </strong>
+  {% endif %}
+  {% endfor %}
+
+  でした！
+<br>
+<br>
+
+
+
 <a href="{{ url_for('game_repeat') }}"><p>同じメンバーで続ける</p></a>
 
 {% endblock %}
