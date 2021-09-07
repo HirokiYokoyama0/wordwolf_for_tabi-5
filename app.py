@@ -1,12 +1,12 @@
 from re import I
-from worddata_Excel import create_word
+from worddata_Excel_tabiF_FC import create_word_TF
 from flask import Flask, render_template, redirect, url_for,request,g
 
 #from models.models import db, MemberList #class名
 import random
 from flask_sqlalchemy import SQLAlchemy ###
 from flask.globals import session
-import worddata_Excel #自作関数
+import worddata_Excel_tabiF_FC #自作関数
 
 app = Flask(__name__)
 app.secret_key = 'yokoyama' # secret key
@@ -195,30 +195,30 @@ def odai_warifuri():
         db.session.commit()
         
          #### エクセルファイルからワードを引っ張ってくる処理（これも親だけ実施する処理）
-        [word_data,word_max_row_num] = create_word() #wordデータをエクセルから生成
-        word_num = random.randint(0,len(word_data)-1) #ランダムにワードデータを一つ選択
+        [word_data,qest_data] = create_word_TF(1) #wordデータをエクセルから生成
+        #word_num = random.randint(0,len(word_data)-1) #ランダムにワードデータを一つ選択
 
         OtherVari = db2.session.query(OtherVar).all()
-        OtherVari[0].word_num = word_num
+        OtherVari[0].word_num = 0 #使用しない
         OtherVari[0].global_ulfnum = global_ulfnum ####危険なくすべき
         OtherVari[0].wolf_number = ulfnum
-        OtherVari[0].word_ulf = word_data[word_num][0] #ウルフのときのお題
-        OtherVari[0].word_shimin = word_data[word_num][1] #市民のときのお題
+        OtherVari[0].word_ulf = word_data[0] #ウルフのときのお題
+        OtherVari[0].word_shimin = word_data[1] #市民のときのお題
 
         if word_data[word_num][2] is None:
             OtherVari[0].quest1 = "" #質問１
         else:
-            OtherVari[0].quest1 = word_data[word_num][2] #質問１
+            OtherVari[0].quest1 = qest_data[0] #質問１
 
         if word_data[word_num][3] is None:
             OtherVari[0].quest2 = "" #質問１
         else:
-            OtherVari[0].quest2 = word_data[word_num][3] #質問１
+            OtherVari[0].quest2 = qest_data[1] #質問１
 
         if word_data[word_num][4] is None:
             OtherVari[0].quest3 = "" #質問１
         else:
-            OtherVari[0].quest3 = word_data[word_num][4] #質問１
+            OtherVari[0].quest3 = qest_data[2] #質問１
    
         db2.session.commit()
     
@@ -275,8 +275,10 @@ def vote_result():
 
     OtherVari = db2.session.query(OtherVar).all()
     ulf_of_name = MemberList_DB[OtherVari[0].global_ulfnum-1].username #ウルフの人の名前を代入
+    word_shimin=OtherVari[0].word_shimin
+    word_ulf=OtherVari[0].word_ulf
     
-    return render_template('vote_result.html',MemberList_DB = MemberList_DB,ulf_of_name = ulf_of_name,myname = myname)
+    return render_template('vote_result.html',MemberList_DB = MemberList_DB, word_shimin = word_shimin,word_ulf =word_ulf,myname = myname)
 
 
 ## ゲーム継続　→　メンバー一覧ページ　
@@ -354,9 +356,10 @@ def result():
 
 
     OtherVari = db2.session.query(OtherVar).all()
-    ulf_of_name = MemberList_DB[OtherVari[0].global_ulfnum-1].username #ウルフの人の名前を代入
+    word_shimin=OtherVari[0].word_shimin
+    word_ulf=OtherVari[0].word_ulf
 
-    return render_template('vote_result.html',MemberList_DB =MemberList_DB,ulf_of_name = ulf_of_name,myname = myname)
+    return render_template('vote_result.html',MemberList_DB =MemberList_DB,word_shimin = word_shimin,word_ulf = word_ulf,myname = myname)
 
 ## 利用規約
 @app.route('/terms') 

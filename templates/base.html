@@ -13,16 +13,28 @@
             <a class="navbar-brand" href="{{ url_for('result') }}">投票結果(更新)</a>
             <a class="navbar-brand" href="{{ url_for('terms_of_service') }}">利用規約</a>
         </nav>
+
+    
         <div class="jumbotron">
-            <h3>　（お試し版）ワードウルフの世界へようこそ　</h3>
-        </div>
-                                           
+            <h3>　TABIFLEEEEK ワードウルフゲームの会　</h3>
+        </div>                                 
+        
+
         <div class="container">
             {% block content %}
             {% endblock %}
         </div>
 
-        <img src="../static/image/aaa.jpg" alt="ウルフ✗">
-        challange by H.Yokoyama
+        <div style="text-align: left">
+            <img src="../static/image/wordwolf_tabifleek.jpg" alt="ウルフ✗">
+            <br>
+            Planning by S.K
+            <br>
+            Planning by *.*
+            <br>
+            challange by H.Y
+        </div>
+
+
     </body>
 </html>
