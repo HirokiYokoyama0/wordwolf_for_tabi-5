@@ -1,5 +1,5 @@
 from re import I
-from worddata_Excel_tabiF_FC import create_word_TF
+from worddata_Excel_tabiF_FC import create_word_TF,check_genre
 from flask import Flask, render_template, redirect, url_for,request,g
 
 #from models.models import db, MemberList #class名
@@ -114,9 +114,12 @@ def post():
     #for member in MemberList_DB:
     #    print("------- MemberList_DB.vote_num --->",member.vote_num) #デバッグ用
     #    print("------- MemberList_DB.username --->",member.username) #デバッグ用
+
+    word_Genre = check_genre()
     
     
-    #print("word_Genre[0]->",word_Genre[0])
+    print("word_Genre[0]->",word_Genre)
+
     return render_template('member_list.html',MemberList_DB = MemberList_DB, val = 0 , myname = myname  ,word_Genre = word_Genre)
 
 @app.route('/reset2',methods=["post"]) # リセット
@@ -167,9 +170,8 @@ def odai_warifuri():
     else:
         flg_none = '0'
 
-    genre_number = int(request.form.get('genre_num'))
+    
     ulfnum = int(request.form.get('number_wolf')) #ウルフの数を取得する
-    print("ulfnum-->",ulfnum) 
 
     listsize  = len(MemberList_DB) #全体人数を取得する
    
@@ -195,7 +197,9 @@ def odai_warifuri():
         db.session.commit()
         
          #### エクセルファイルからワードを引っ張ってくる処理（これも親だけ実施する処理）
-        [word_data,qest_data] = create_word_TF(1) #wordデータをエクセルから生成
+        genre_number = int(request.form.get('genre_num'))
+        print("genre-->",genre_number) 
+        [word_data,qest_data] = create_word_TF(genre_number) #wordデータをエクセルから生成
         #word_num = random.randint(0,len(word_data)-1) #ランダムにワードデータを一つ選択
 
         OtherVari = db2.session.query(OtherVar).all()
@@ -310,8 +314,9 @@ def game_repeat():
 
     
     db2.session.query(OtherVar).delete() #OtherVarを削除 
-
     db2.session.commit()
+
+    word_Genre = check_genre()
     
     return render_template('member_list.html',MemberList_DB=MemberList_DB,myname = myname, word_Genre = word_Genre)
 
