@@ -27,7 +27,6 @@ def create_word_TF(GENRUNUM = 1):
         if word is None:
             break
         else:
-            print("word ---> ",word)
             word_data.append(word)
 
     
