@@ -205,17 +205,17 @@ def odai_warifuri():
         OtherVari[0].word_ulf = word_data[0] #ウルフのときのお題
         OtherVari[0].word_shimin = word_data[1] #市民のときのお題
 
-        if word_data[word_num][2] is None:
+        if qest_data[0] is None:
             OtherVari[0].quest1 = "" #質問１
         else:
             OtherVari[0].quest1 = qest_data[0] #質問１
 
-        if word_data[word_num][3] is None:
+        if qest_data[1]  is None:
             OtherVari[0].quest2 = "" #質問１
         else:
             OtherVari[0].quest2 = qest_data[1] #質問１
 
-        if word_data[word_num][4] is None:
+        if  qest_data[2] is None:
             OtherVari[0].quest3 = "" #質問１
         else:
             OtherVari[0].quest3 = qest_data[2] #質問１
