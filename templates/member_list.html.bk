@@ -6,32 +6,14 @@
 <meta http-equiv="refresh" content="2;URL={{ url_for('load_member_list') }}">
 -->
 
-
 <p> 現在の参加メンバーは　</p>
 {% for member in MemberList_DB %}
 <p>
-    <div style="display:inline-flex">
-    <b>{{ member.username }} さん</b>
-    {% if member.prepare_flg == 0 %}
-
-      {% if member.username == myname %}
-     　　 
-        <form action="/memberlist_check" style="display:inline;" method="POST">
-        <input  type="submit"  name="BtnID" value="{{member.id}}" >
-        </form>←準備ができたらボタンを押してください
-          
-      {% endif %}
-   
-
-  {% else %}
-  　<font color="blue">   準備OK </font>
-  {% endif %}
-  </div> 
-<br>
+    {{ member.username }} さん
+    
 </p>
 {% endfor %}
 
-<br>
 <br>
 <br>
 

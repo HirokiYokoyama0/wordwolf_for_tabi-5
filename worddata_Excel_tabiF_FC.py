@@ -21,9 +21,9 @@ def create_word_TF(GENRUNUM):
     for j in range(14,17): #質問例
         qest = sheet.cell(row=GENRUNUM+1, column=j).value
         if  qest is None:
-            qest_data.append(qest)
-        else:
             qest_data.append("")
+        else:
+            qest_data.append(qest)
 
 
     selected_word = random.sample(word_data,2)

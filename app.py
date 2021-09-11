@@ -5,6 +5,7 @@ from flask import Flask, render_template, redirect, url_for,request,g
 #from models.models import db, MemberList #class名
 import random
 from flask_sqlalchemy import SQLAlchemy ###
+from sqlalchemy.dialects import postgresql
 from flask.globals import session
 import worddata_Excel_tabiF_FC #自作関数
 
@@ -13,8 +14,9 @@ app.secret_key = 'yokoyama' # secret key
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///db_memberlist.sqlite' ###
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False ###
 
-db = SQLAlchemy(app) ###
-db2 = SQLAlchemy(app) ###
+db = SQLAlchemy(app) ### for userdata
+db2 = SQLAlchemy(app) ### for OtherVariable
+db3 = SQLAlchemy(app) ### for worddata
 
 class MemberList(db.Model):
     __tablename__ = 'players'
@@ -25,14 +27,17 @@ class MemberList(db.Model):
     ulf_flg = db.Column(db.Integer, nullable=False)
     to_vote = db.Column(db.Integer, nullable=False)
     to_vote2 = db.Column(db.Integer, nullable=False)
+    prepare_flg = db.Column(db.Integer, nullable=False)
 
-    def __init__(self, username=None, comment=None, vote_num = 0 , ulf_flg = 0 ,to_vote = 0,to_vote2 = 0):
+    def __init__(self, username=None, comment=None, vote_num = 0 , ulf_flg = 0 ,to_vote = 0,to_vote2 = 0,prepare_flg = 0
+    ):
         self.username = username
         self.comment = comment
         self.vote_num = vote_num
         self.ulf_flg = ulf_flg
         self.to_vote = to_vote
         self.to_vote2 = to_vote2
+        self.prepare_flg = prepare_flg
 
     def __repr__(self):
         #return '<UserName: %r  ' % (self.username)
@@ -68,6 +73,18 @@ class OtherVar(db2.Model):
         return f"id = {self.id},word_num = {self.word_num}, global_ulfnum={self.global_ulfnum}, word_ulf = {self.word_ulf}"
 
 
+class OrignalGenreData(db3.Model):
+    __tablename__ = 'OrignalGenreData'
+    id = db3.Column(db.Integer, primary_key=True)
+    GenreData = db.Column(db.String(128), nullable=True)
+
+    def __init__(self, GenreData=None):
+        self.GenreData = GenreData
+
+    def __repr__(self):
+        return f"{self.GenreData}"
+
+
 word_data = [] #wordデータ格納用
 word_num = 0 #wordを選択番号
 
@@ -99,7 +116,7 @@ def post():
     
     myname = session.get('username')
 
-    new_member = MemberList(username=request.form["username"],comment="",vote_num = 0 , ulf_flg = 0, to_vote = 0)
+    new_member = MemberList(username=request.form["username"],comment="",vote_num = 0 , ulf_flg = 0, to_vote = 0, to_vote2 = 0,prepare_flg =0)
     db.session.add(new_member)
     db.session.commit()
 
@@ -111,14 +128,21 @@ def post():
 
     MemberList_DB = db.session.query(MemberList).all() #デバッグ用
    
-    #for member in MemberList_DB:
-    #    print("------- MemberList_DB.vote_num --->",member.vote_num) #デバッグ用
-    #    print("------- MemberList_DB.username --->",member.username) #デバッグ用
+ 
+    #### この処理は一回しかやらない（最初にとおったときのみ実施） ####
+    if len(MemberList_DB) == 1: #最初のひとりだけ？ちょっと不安処理
+        word_Genre_p = check_genre()
 
-    word_Genre = check_genre()
+        for data in word_Genre_p:
+            new_data = OrignalGenreData(GenreData=data)
+            db3.session.add(new_data)
     
-    
-    print("word_Genre[0]->",word_Genre)
+        db3.session.commit()
+     #### この処理は一回しかやらない ####
+
+    word_Genre = db3.session.query(OrignalGenreData).all()
+
+    print("word_Genre.GenreData[0]->",word_Genre)
 
     return render_template('member_list.html',MemberList_DB = MemberList_DB, val = 0 , myname = myname  ,word_Genre = word_Genre)
 
@@ -150,7 +174,34 @@ def reset1():
    db2.session.query(OtherVar).delete() #OtherVarを削除 
    db2.session.commit()
 
+   db3.session.query(OrignalGenreData).delete() #OtherVarを削除 
+   db3.session.commit()
+
    return render_template('main.html')
+
+
+
+## ユーザーチェック
+@app.route('/memberlist_check',methods=['POST'])
+def memberlist_check():
+
+    
+    btnid = request.form['BtnID']
+    print(" btnid------->",btnid)
+
+    myname = session.get('username')
+
+    content2 = db.session.query(MemberList).filter_by(id = btnid).first()
+    content2.prepare_flg = 1
+    db.session.commit()
+
+    MemberList_DB = db.session.query(MemberList).all()
+
+    word_Genre = db.session.query(OrignalGenreData).all()
+
+    print("word_Genre---->",word_Genre)
+
+    return render_template('member_list.html',MemberList_DB=MemberList_DB,myname = myname, word_Genre = word_Genre)
     
 
 
@@ -201,6 +252,7 @@ def odai_warifuri():
         print("genre-->",genre_number) 
         [word_data,qest_data] = create_word_TF(genre_number) #wordデータをエクセルから生成
         #word_num = random.randint(0,len(word_data)-1) #ランダムにワードデータを一つ選択
+        print("qest_data---->",qest_data)
 
         OtherVari = db2.session.query(OtherVar).all()
         OtherVari[0].word_num = 0 #使用しない
@@ -307,6 +359,7 @@ def game_repeat():
         member.ulf_flg=0
         member.to_vote=0
         member.to_vote2=0
+        member.prepare_flg=0
 
     db.session.commit()
 
@@ -316,8 +369,7 @@ def game_repeat():
     db2.session.query(OtherVar).delete() #OtherVarを削除 
     db2.session.commit()
 
-    word_Genre = check_genre()
-    
+    word_Genre = db3.session.query(OrignalGenreData).all()  
     return render_template('member_list.html',MemberList_DB=MemberList_DB,myname = myname, word_Genre = word_Genre)
 
 
@@ -379,4 +431,6 @@ def redirect_main_page(error):
 if __name__ == '__main__':
     #db.create_all()
     #db2.create_all()
+    #db3.create_all()
+
     app.run(debug=True)
