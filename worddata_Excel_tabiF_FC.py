@@ -3,7 +3,7 @@ import random
 
 def create_word_TF(GENRUNUM):
 
-    workbook = openpyxl.load_workbook('ワードウルフ単語_TF.xlsx')
+    workbook = openpyxl.load_workbook('ワードウルフ単語_TF2.xlsx')
     sheet = workbook["General"]
     max_row_num = sheet.max_row
     word_data = []
@@ -18,7 +18,7 @@ def create_word_TF(GENRUNUM):
             word_data.append(word)
 
     
-    for j in range(14,17): #質問例
+    for j in range(14,19): # 5質問例
         qest = sheet.cell(row=GENRUNUM+1, column=j).value
         if  qest is None:
             qest_data.append("")
@@ -34,13 +34,13 @@ def create_word_TF(GENRUNUM):
   
 def check_genre():
 
-    workbook = openpyxl.load_workbook('ワードウルフ単語_TF.xlsx')
+    workbook = openpyxl.load_workbook('ワードウルフ単語_TF2.xlsx')
     sheet = workbook["General"]
     max_row_num = sheet.max_row
     genre_data = []
 
     
-    for k in range(2,8):
+    for k in range(2,22):##ここは可変にすべき
         genre = sheet.cell(row=k, column=1).value
         genre_data.append(genre)
 

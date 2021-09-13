@@ -56,8 +56,10 @@ class OtherVar(db2.Model):
     quest1 = db.Column(db.String(256), nullable=True)
     quest2 = db.Column(db.String(256), nullable=True)
     quest3 = db.Column(db.String(256), nullable=True)
+    quest4 = db.Column(db.String(256), nullable=True)
+    quest5 = db.Column(db.String(256), nullable=True)
 
-    def __init__(self, word_num = 0 , global_ulfnum = 0 ,wolf_number = 0 ,genre_number = 0 ,word_ulf = '' ,word_shimin = '',quest1 = '',quest2 = '',quest3 = ''):
+    def __init__(self, word_num = 0 , global_ulfnum = 0 ,wolf_number = 0 ,genre_number = 0 ,word_ulf = '' ,word_shimin = '',quest1 = '',quest2 = '',quest3 = '',quest4 = '',quest5 = ''):
         self.word_num = word_num
         self.global_ulfnum = global_ulfnum
         self.wolf_number = wolf_number
@@ -67,6 +69,8 @@ class OtherVar(db2.Model):
         self.quest1 = quest1
         self.quest2 = quest2
         self.quest3 = quest3
+        self.quest4 = quest4
+        self.quest5 = quest5
         
 
     def __repr__(self):
@@ -133,6 +137,8 @@ def post():
     if len(MemberList_DB) == 1: #最初のひとりだけ？ちょっと不安処理
         word_Genre_p = check_genre()
 
+        print("word_Genre_p====>",word_Genre_p)
+
         for data in word_Genre_p:
             new_data = OrignalGenreData(GenreData=data)
             db3.session.add(new_data)
@@ -141,10 +147,7 @@ def post():
      #### この処理は一回しかやらない ####
 
     word_Genre = db3.session.query(OrignalGenreData).all()
-
-    print("word_Genre.GenreData[0]->",word_Genre)
-
-    return render_template('member_list.html',MemberList_DB = MemberList_DB, val = 0 , myname = myname  ,word_Genre = word_Genre)
+    return render_template('member_list.html',MemberList_DB = MemberList_DB, val = 0 , myname = myname  ,word_Genre = word_Genre ,flg_start = 0)
 
 @app.route('/reset2',methods=["post"]) # リセット
 def reset2():
@@ -197,11 +200,15 @@ def memberlist_check():
 
     MemberList_DB = db.session.query(MemberList).all()
 
+    flg_start = 1
+    for member in MemberList_DB:
+        if member.prepare_flg == 0 :
+            flg_start = 0 #まだ準備できていない人がいる
+            break
+
     word_Genre = db.session.query(OrignalGenreData).all()
 
-    print("word_Genre---->",word_Genre)
-
-    return render_template('member_list.html',MemberList_DB=MemberList_DB,myname = myname, word_Genre = word_Genre)
+    return render_template('member_list.html',MemberList_DB=MemberList_DB,myname = myname, word_Genre = word_Genre,flg_start = flg_start)
     
 
 
@@ -267,15 +274,25 @@ def odai_warifuri():
             OtherVari[0].quest1 = qest_data[0] #質問１
 
         if qest_data[1]  is None:
-            OtherVari[0].quest2 = "" #質問１
+            OtherVari[0].quest2 = "" #質問2
         else:
-            OtherVari[0].quest2 = qest_data[1] #質問１
+            OtherVari[0].quest2 = qest_data[1] #質問2
 
         if  qest_data[2] is None:
-            OtherVari[0].quest3 = "" #質問１
+            OtherVari[0].quest3 = "" #質問3
         else:
-            OtherVari[0].quest3 = qest_data[2] #質問１
-   
+            OtherVari[0].quest3 = qest_data[2] #質問3
+
+        if  qest_data[3] is None:
+            OtherVari[0].quest4 = "" #質問4
+        else:
+            OtherVari[0].quest4 = qest_data[3] #質問4
+
+        if  qest_data[4] is None:
+            OtherVari[0].quest5 = "" #質問5
+        else:
+            OtherVari[0].quest4 = qest_data[3] #質問5
+
         db2.session.commit()
     
     else:
@@ -306,7 +323,7 @@ def odai_haishin():
             wordtheme = OtherVari[0].word_shimin #市民のときのお題配信処理
 
 
-     return render_template('odai.html',MemberList_DB = MemberList_DB,wordtheme = wordtheme,myname = myname,quest1 =  OtherVari[0].quest1,quest2 =  OtherVari[0].quest2,quest3 =  OtherVari[0].quest3)
+     return render_template('odai.html',MemberList_DB = MemberList_DB,wordtheme = wordtheme,myname = myname,quest1 =  OtherVari[0].quest1,quest2 =  OtherVari[0].quest2,quest3 =  OtherVari[0].quest3,quest4 =  OtherVari[0].quest4,quest5 =  OtherVari[0].quest5)
 
 ## 投票結果 
 @app.route('/vote', methods=['POST']) 
@@ -370,7 +387,8 @@ def game_repeat():
     db2.session.commit()
 
     word_Genre = db3.session.query(OrignalGenreData).all()  
-    return render_template('member_list.html',MemberList_DB=MemberList_DB,myname = myname, word_Genre = word_Genre)
+
+    return render_template('member_list.html',MemberList_DB=MemberList_DB,myname = myname, word_Genre = word_Genre,flg_start=0)
 
 
 ## メンバー一覧ページ　
@@ -379,7 +397,15 @@ def load_member_list():
 
     myname = session.get('username')
     MemberList_DB = db.session.query(MemberList).all()
-    return render_template('member_list.html',MemberList_DB=MemberList_DB,myname = myname, word_Genre = word_Genre)
+
+    flg_start = 1
+    for member in MemberList_DB:
+        if member.prepare_flg == 0 :
+            flg_start = 0 #まだ準備できていない人がいる
+            break
+
+
+    return render_template('member_list.html',MemberList_DB=MemberList_DB,myname = myname, word_Genre = word_Genre,flg_start = flg_start)
 
 ## お題割り振りページ　（親以外のリンク用）
 @app.route('/memberlist_prepare')

@@ -35,6 +35,8 @@
 <br>
 <br>
 
+{% if flg_start == 1 %}
+
 <p>このメンバーで開始しますか？（親の人のみが押してください）</p>
 <form action="/prepare" method="POST">
   <select name="genre_num">
@@ -47,7 +49,7 @@
     <option value=1>ウルフ１人</option>
     <option value=2>ウルフ２人</option>
   </select>
-  <input class="submit-button" value="開始する" type="submit" id="button1" onsubmit=" func1()">
+  <input class="submit-button" value="開始する" type="submit" id="button1" >
 </form>
 
 
@@ -57,18 +59,8 @@
 <br>
 <a href="{{ url_for('memberlist_prepare') }}"><strong>親以外の人はこちらをクリック</strong></a>
 
-<script>
-    function func1() {
-      document.getElementById("button1").disabled = true;
-      <a href="{{ url_for('memberlist_prepare') }}">親以外の方はこちらをクリック</a>
-      return;
-    }
-
-</script>
-
-
 <br>
 <br>
-
+{% endif %}
 
 {% endblock %}
