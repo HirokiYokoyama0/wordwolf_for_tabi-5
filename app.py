@@ -404,6 +404,7 @@ def load_member_list():
             flg_start = 0 #まだ準備できていない人がいる
             break
 
+    word_Genre = db.session.query(OrignalGenreData).all()
 
     return render_template('member_list.html',MemberList_DB=MemberList_DB,myname = myname, word_Genre = word_Genre,flg_start = flg_start)
 
