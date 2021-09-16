@@ -40,7 +40,7 @@ def check_genre():
     genre_data = []
 
     
-    for k in range(2,22):##ここは可変にすべき
+    for k in range(2,24):##ここは可変にすべき
         genre = sheet.cell(row=k, column=1).value
         genre_data.append(genre)
 
