@@ -291,7 +291,7 @@ def odai_warifuri():
         if  qest_data[4] is None:
             OtherVari[0].quest5 = "" #質問5
         else:
-            OtherVari[0].quest4 = qest_data[3] #質問5
+            OtherVari[0].quest5 = qest_data[4] #質問5
 
         db2.session.commit()
     
