@@ -5,9 +5,19 @@
 <meta http-equiv="refresh" content="6;URL={{ url_for('result') }}">
 -->
 
+{% if  game_result == 0 %}
+まだ投票が終わっていない状態です
+(みんなが投票した段階で”投票結果（更新）”リンクをクリックしてください)
 
-<p> 私のユーザ名は　{{myname}}　です </p>
+{% elif game_result ==1 %}
+<font color="red">市民の勝ちです</font>
 
+{% else %}
+<font color="red">ウルフの勝ちです</font>
+
+{% endif %}
+
+<br>
 
 <p> 投票結果 </p>
 

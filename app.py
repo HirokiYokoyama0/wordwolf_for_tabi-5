@@ -4,7 +4,8 @@ from flask import Flask, render_template, redirect, url_for,request,g
 
 #from models.models import db, MemberList #class名
 import random
-from flask_sqlalchemy import SQLAlchemy ###
+from flask_sqlalchemy import SQLAlchemy
+from sqlalchemy.sql import func
 from sqlalchemy.dialects import postgresql
 from flask.globals import session
 import worddata_Excel_tabiF_FC #自作関数
@@ -351,7 +352,29 @@ def vote_result():
     word_shimin=OtherVari[0].word_shimin
     word_ulf=OtherVari[0].word_ulf
     
-    return render_template('vote_result.html',MemberList_DB = MemberList_DB, word_shimin = word_shimin,word_ulf =word_ulf,myname = myname)
+    ## 勝利判別
+    listsize  = len(MemberList_DB) #全体人数を取得する
+
+    all_vote_num = 0
+    max_vote_num = 0
+    for member in MemberList_DB:
+        all_vote_num = all_vote_num + member.vote_num #現在の投票総数をカウント
+        if max_vote_num < member.vote_num:
+            max_vote_num =  member.vote_num
+
+
+    if all_vote_num ==  listsize:
+        if  MemberList_DB[OtherVari[0].global_ulfnum-1].vote_num == max_vote_num:
+            game_result = 1 #　ウルフが最多得票(市民の勝ち)
+        else:
+            game_result = 2 #　他市民が最多得票(ウルフの勝ち)
+    else:
+        game_result = 0 #　まだ全員が投票していない
+
+
+    print("resu-------> ",game_result)
+    
+    return render_template('vote_result.html',MemberList_DB = MemberList_DB, word_shimin = word_shimin,word_ulf =word_ulf,myname = myname, game_result = game_result)
 
 
 ## ゲーム継続　→　メンバー一覧ページ　
@@ -443,7 +466,29 @@ def result():
     word_shimin=OtherVari[0].word_shimin
     word_ulf=OtherVari[0].word_ulf
 
-    return render_template('vote_result.html',MemberList_DB =MemberList_DB,word_shimin = word_shimin,word_ulf = word_ulf,myname = myname)
+    ## 勝利判別
+    listsize  = len(MemberList_DB) #全体人数を取得する
+
+    all_vote_num = 0
+    max_vote_num = 0
+    for member in MemberList_DB:
+        all_vote_num = all_vote_num + member.vote_num #現在の投票総数をカウント
+        if max_vote_num < member.vote_num:
+            max_vote_num =  member.vote_num
+
+
+    if all_vote_num ==  listsize:
+        if  MemberList_DB[OtherVari[0].global_ulfnum-1].vote_num == max_vote_num:
+            game_result = 1 #　ウルフが最多得票(市民の勝ち)
+        else:
+            game_result = 2 #　他市民が最多得票(ウルフの勝ち)
+    else:
+        game_result = 0 #　まだ全員が投票していない
+
+
+    print("resu-------> ",game_result)
+
+    return render_template('vote_result.html',MemberList_DB =MemberList_DB,word_shimin = word_shimin,word_ulf = word_ulf,myname = myname, game_result = game_result)
 
 ## 利用規約
 @app.route('/terms') 
