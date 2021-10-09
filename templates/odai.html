@@ -20,7 +20,7 @@
     <select name="sel">
         <option value="null" disabled selected>選択して下さい</option>
         {% for member in MemberList_DB %}
-        <option value= {{ loop.index }}>{{member.username}}</option>
+        <option value= {{member.username}}>{{member.username}}</option>
         {% endfor %}
     </select>
     <div>

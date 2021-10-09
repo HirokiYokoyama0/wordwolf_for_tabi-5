@@ -1,9 +1,10 @@
 import openpyxl
 import random
+import os
 
 def create_word_TF(GENRUNUM):
-
-    workbook = openpyxl.load_workbook('ワードウルフ単語_TF2.xlsx')
+    
+    workbook = openpyxl.load_workbook(os.path.dirname(os.path.abspath(__file__))+'\\ワードウルフ単語_TF2.xlsx')
     sheet = workbook["General"]
     max_row_num = sheet.max_row
     word_data = []
@@ -34,7 +35,7 @@ def create_word_TF(GENRUNUM):
   
 def check_genre():
 
-    workbook = openpyxl.load_workbook('ワードウルフ単語_TF2.xlsx')
+    workbook = openpyxl.load_workbook(os.path.dirname(os.path.abspath(__file__))+'\\ワードウルフ単語_TF2.xlsx')
     sheet = workbook["General"]
     max_row_num = sheet.max_row
     genre_data = []

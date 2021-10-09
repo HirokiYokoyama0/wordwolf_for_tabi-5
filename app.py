@@ -2,6 +2,7 @@ from re import I
 from worddata_Excel_tabiF_FC import create_word_TF,check_genre
 from flask import Flask, render_template, redirect, url_for,request,g
 
+
 #from models.models import db, MemberList #class名
 import random
 from flask_sqlalchemy import SQLAlchemy
@@ -335,20 +336,20 @@ def odai_haishin():
 ## 投票結果 
 @app.route('/vote', methods=['POST']) 
 def vote_result():
- 
+    print(request.form.get('sel'))
     myname = session.get('username')
     MemberList_DB = db.session.query(MemberList).all() #DBからメンバーリストを割り当てる
-    content = db.session.query(MemberList).filter_by(id=int(request.form.get('sel'))).first()
+    content = db.session.query(MemberList).filter_by(username=(request.form.get('sel'))).first()
+    print("cont",content)
 
     #print("content[0].vote_num",content.vote_num)  #デバッグモード
     #print("MemberList_DB[0].vote_num",MemberList_DB[0].vote_num)  #デバッグモード
-
     content.vote_num = content.vote_num + 1
     content2 = db.session.query(MemberList).filter_by(username = myname).first()
     #print("content---->",content)
     #print("content2---->",content2)
     
-    content2.to_vote = int(request.form.get('sel')) #誰に投票したかを入力
+    content2.to_vote = int(content.id) #誰に投票したかを入力
 
     db.session.commit()
     #print("content[0].vote_num コミット後",content.vote_num)  #デバッグモード
