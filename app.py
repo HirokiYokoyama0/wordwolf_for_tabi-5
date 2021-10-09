@@ -103,6 +103,7 @@ word_Genre = ["一般","旅","食べ物"]
 def main():
     myname = session.get('username')
 
+    
     if myname  is None:
         checkflg = 0
     else:
@@ -150,17 +151,22 @@ def post():
     word_Genre = db3.session.query(OrignalGenreData).all()
     return render_template('member_list.html',MemberList_DB = MemberList_DB, val = 0 , myname = myname  ,word_Genre = word_Genre ,flg_start = 0)
 
-@app.route('/reset2',methods=["post"]) # リセット
+@app.route('/reset2',methods=["post"]) # 自分のユーザ情報を削除
 def reset2():
    
+   # データベースからユーザ情報を削除
+    myname = session.get('username')
+    content2 = db.session.query(MemberList).filter_by(username = myname).first()
+    db.session.delete(content2)
+    db.session.commit()
 
-   if "username" in session:  # セッション情報があれば削除
+    # セッション情報があれば削除
+    if "username" in session:
         session.pop('username', None)
-
-   session.clear
- 
+        
+    session.clear
     
-   return render_template('main.html')
+    return render_template('main.html')
 
 
 @app.route('/reset1',methods=["post"]) # リセット

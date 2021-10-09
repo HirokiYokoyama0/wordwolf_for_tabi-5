@@ -14,12 +14,15 @@
 <br>
 
 {% if checkflg == 1  %}
+<font color="green">
 <p>★セッションリセット</p>
-ユーザ名が残っているのでは、リセットボタンを押してから
-登録してください。
+もう一度ユーザ名を登録する場合は、下記の自分のユーザ名削除ボタンを押してから
+再登録してください。<br>
+（再登録しない場合は、上記リンクの参加メンバ一覧(更新)のリンクを押してください）
+</font>
 
 <form action="/reset2" method="POST">
-	<input class="submit-button" value="リセット" type="submit" >
+	<input class="submit-button" value="自分のユーザ名削除" type="submit" >
 </form>
 
 {% endif %}
@@ -28,6 +31,7 @@
 <br>
 
 <p>★ゲームリセット（ユーザリスト削除）</p>
+ゲームの親のみ、ゲームをはじめる前に使ってください
 
 <form action="/reset1" method="POST">
 	<input class="submit-button" value="完全リセット" type="submit" >
