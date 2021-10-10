@@ -251,7 +251,15 @@ def odai_warifuri():
         if ulfnum == 1 :
 
             global_ulfnum = random.randint(1,listsize) #ここでウルフを決定する.
+            #idを数値として扱いたいができなかった。。。以下のように。
+            #content = db.session.query(MemberList.id).all()
+            #print("aaaa6->",content[0])
+            #aaaa6-> (2,)
+            #aaaa6-> <class 'sqlalchemy.engine.row.Row'>
+            
+                    
             MemberList_DB[global_ulfnum-1].ulf_flg = 1
+ 
         
         else :
 
