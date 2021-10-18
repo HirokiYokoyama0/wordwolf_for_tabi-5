@@ -223,10 +223,6 @@ def memberlist_check():
 @app.route("/prepare",methods=["post"]) # 開始準備確認/＊＊親だけが実行する処理
 def odai_warifuri(): 
     #お題割り振り処理
-    global global_ulfnum
-    global word_data
-    global word_num
-
     myname = session.get('username')
     MemberList_DB = db.session.query(MemberList).all()
 
@@ -236,9 +232,7 @@ def odai_warifuri():
     else:
         flg_none = '0'
 
-    
     ulfnum = int(request.form.get('number_wolf')) #ウルフの数を取得する
-
     listsize  = len(MemberList_DB) #全体人数を取得する
    
     OtherVari = db2.session.query(OtherVar).all()
@@ -320,9 +314,6 @@ def odai_warifuri():
  ## お題配信する
 @app.route("/odaihaishin",methods=["post"])
 def odai_haishin():
-     global word_data
-     global global_ulfnum
-     global word_num
 
      myname = session.get('username')
      MemberList_DB = db.session.query(MemberList).all() #DBからメンバーリストを割り当てる
@@ -397,15 +388,6 @@ def vote_result():
 def game_repeat():
 
     #リセット処理のため（継続のため）
-    global word_data #wordデータ格納用リセット
-    word_data = []
-    global word_num  #wordを選択番号
-    word_num = 0
-    global global_ulfnum
-    global_ulfnum = 0
-    global genre_number
-    genre_number = 0
-    
     myname = session.get('username')
     MemberList_DB = db.session.query(MemberList).all()
     
@@ -419,8 +401,6 @@ def game_repeat():
     db.session.commit()
 
     OtherVari = db2.session.query(OtherVar).all()
-
-    
     db2.session.query(OtherVar).delete() #OtherVarを削除 
     db2.session.commit()
 
@@ -452,7 +432,6 @@ def memberlist_prepare():
     
     myname = session.get('username')
     MemberList_DB = db.session.query(MemberList).all()
-
     OtherVari = db2.session.query(OtherVar).all()
     
     
@@ -499,9 +478,6 @@ def result():
             game_result = 2 #　他市民が最多得票(ウルフの勝ち)
     else:
         game_result = 0 #　まだ全員が投票していない
-
-
-    print("resu-------> ",game_result)
 
     return render_template('vote_result.html',MemberList_DB =MemberList_DB,word_shimin = word_shimin,word_ulf = word_ulf,myname = myname, game_result = game_result)
 
