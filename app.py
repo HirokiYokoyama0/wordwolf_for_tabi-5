@@ -1,17 +1,17 @@
-from re import I
 from worddata_Excel_tabiF_FC import create_word_TF,check_genre
 from flask import Flask, render_template, redirect, url_for,request,g
-
-
-#from models.models import db, MemberList #class名
-import random
-from flask_sqlalchemy import SQLAlchemy
-from sqlalchemy.sql import func
-from sqlalchemy.dialects import postgresql
 from flask.globals import session
-import worddata_Excel_tabiF_FC #自作関数
+from flask_sqlalchemy import SQLAlchemy
+#from sqlalchemy.sql import func
+#from sqlalchemy.dialects import postgresql
+import random
+
+#from models.model import db,MemberList #class名
+#from models.model import db2,OtherVar,OrignalGenreData
+#from models.model import db3,OrignalGenreData
 
 app = Flask(__name__)
+
 app.secret_key = 'yokoyama' # secret key
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///db_memberlist.sqlite' ###
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False ###
@@ -89,15 +89,6 @@ class OrignalGenreData(db3.Model):
 
     def __repr__(self):
         return f"{self.GenreData}"
-
-
-word_data = [] #wordデータ格納用
-word_num = 0 #wordを選択番号
-
-global_ulfnum = 0
-genre_number = 0
-
-word_Genre = ["一般","旅","食べ物"]
 
 
 @app.route('/') # メインページ
