@@ -1,43 +1,51 @@
 {% extends 'base.html' %}
 {% block content %}
 
+<div class="py-5">
+        <div class="container">
+                <img src="../static/image/wordwolf_tabifleek.jpg" alt="ウルフ✗">
+        </div>
+</div>
 
-
-<p>ユーザ名を入力してください</p>
-<form action="/index" method="POST">
-        <input type="text" name="username" placeholder="Enter name" required>
-        <input type="submit" value="登録">
-</form>
-
-
-<br>
-<br>
+<div class="pb-5">
+        <div class="card" style="width: 30rem;">
+                <div class="card-body">
+                <h5 class="card-title">ユーザ名を入力してください</h5>
+                <form action="/index" method="POST">
+                        <input type="text" name="username" placeholder="Enter name" required>
+                        <input type="submit" value="登録">
+                </form>
+                </div>
+        </div>
+</div>
 
 {% if checkflg == 1  %}
-<font color="green">
-<p>★セッションリセット</p>
-もう一度ユーザ名を登録する場合は、下記の自分のユーザ名削除ボタンを押してから
-再登録してください。<br>
-（再登録しない場合は、上記リンクの参加メンバ一覧(更新)のリンクを押してください）
-</font>
 
-<form action="/reset2" method="POST">
-	<input class="submit-button" value="自分のユーザ名削除" type="submit" >
-</form>
+<div class="pb-5">
+        <font color="green">
+        <p>★セッションリセット</p>
+        もう一度ユーザ名を登録する場合は、下記の自分のユーザ名削除ボタンを押してから
+        再登録してください。<br>
+        （再登録しない場合は、上記リンクの参加メンバ一覧(更新)のリンクを押してください）
+        </font>
+        <form action="/reset2" method="POST">
+                <input class="submit-button" value="自分のユーザ名削除" type="submit" >
+        </form>
+</div>
 
 {% endif %}
 
-<br>
-<br>
+<div class="pb-5">
+        <p>★ゲームリセット（ユーザリスト削除）</p>
+        ゲームの親のみ、ゲームをはじめる前に使ってください
+        <form action="/reset1" method="POST">
+                <input class="submit-button" value="完全リセット" type="submit" >
+        </form>
+</div>
 
-<p>★ゲームリセット（ユーザリスト削除）</p>
-ゲームの親のみ、ゲームをはじめる前に使ってください
-
-<form action="/reset1" method="POST">
-	<input class="submit-button" value="完全リセット" type="submit" >
-</form>
-
-<br>
-<br>
+<nav class="navbar  navbar-dark bg-info">
+        <p class="text-left"></p>
+        <p class="text-right">Planning by S.U   Planning by S.K   created by H.Y</p>
+</nav>
 
 {% endblock %}

@@ -73,7 +73,7 @@ class OtherVar(db2.Model):
         self.quest3 = quest3
         self.quest4 = quest4
         self.quest5 = quest5
-        
+
 
     def __repr__(self):
         return f"id = {self.id},word_num = {self.word_num}, global_ulfnum={self.global_ulfnum}, word_ulf = {self.word_ulf}"
@@ -104,7 +104,7 @@ word_Genre = ["一般","旅","食べ物"]
 def main():
     myname = session.get('username')
 
-    
+
     if myname  is None:
         checkflg = 0
     else:
@@ -120,7 +120,7 @@ def post():
     if "username" not in session:
         session["username"] = request.form["username"]
 
-    
+
     myname = session.get('username')
 
     new_member = MemberList(username=request.form["username"],comment="",vote_num = 0 , ulf_flg = 0, to_vote = 0, to_vote2 = 0,prepare_flg =0)
@@ -134,8 +134,7 @@ def post():
     #db.session.commit()
 
     MemberList_DB = db.session.query(MemberList).all() #デバッグ用
-   
- 
+
     #### この処理は一回しかやらない（最初にとおったときのみ実施） ####
     if len(MemberList_DB) == 1: #最初のひとりだけ？ちょっと不安処理
         word_Genre_p = check_genre()
@@ -223,10 +222,6 @@ def memberlist_check():
 @app.route("/prepare",methods=["post"]) # 開始準備確認/＊＊親だけが実行する処理
 def odai_warifuri(): 
     #お題割り振り処理
-    global global_ulfnum
-    global word_data
-    global word_num
-
     myname = session.get('username')
     MemberList_DB = db.session.query(MemberList).all()
 
@@ -236,9 +231,7 @@ def odai_warifuri():
     else:
         flg_none = '0'
 
-    
     ulfnum = int(request.form.get('number_wolf')) #ウルフの数を取得する
-
     listsize  = len(MemberList_DB) #全体人数を取得する
    
     OtherVari = db2.session.query(OtherVar).all()
@@ -320,9 +313,6 @@ def odai_warifuri():
  ## お題配信する
 @app.route("/odaihaishin",methods=["post"])
 def odai_haishin():
-     global word_data
-     global global_ulfnum
-     global word_num
 
      myname = session.get('username')
      MemberList_DB = db.session.query(MemberList).all() #DBからメンバーリストを割り当てる
@@ -349,47 +339,65 @@ def vote_result():
     MemberList_DB = db.session.query(MemberList).all() #DBからメンバーリストを割り当てる
     content = db.session.query(MemberList).filter_by(username=(request.form.get('sel'))).first()
     print("cont",content)
+    if content==None:
 
-    #print("content[0].vote_num",content.vote_num)  #デバッグモード
-    #print("MemberList_DB[0].vote_num",MemberList_DB[0].vote_num)  #デバッグモード
-    content.vote_num = content.vote_num + 1
-    content2 = db.session.query(MemberList).filter_by(username = myname).first()
-    #print("content---->",content)
-    #print("content2---->",content2)
-    
-    content2.to_vote = int(content.id) #誰に投票したかを入力
+        OtherVari = db2.session.query(OtherVar).all()
 
-    db.session.commit()
-    #print("content[0].vote_num コミット後",content.vote_num)  #デバッグモード
+        content2 = db.session.query(MemberList).filter_by(username = myname).first()
 
-    OtherVari = db2.session.query(OtherVar).all()
-    ulf_of_name = MemberList_DB[OtherVari[0].global_ulfnum-1].username #ウルフの人の名前を代入
-    word_shimin=OtherVari[0].word_shimin
-    word_ulf=OtherVari[0].word_ulf
-    
-    ## 勝利判別
-    listsize  = len(MemberList_DB) #全体人数を取得する
+        print("/odaihaishinnai ウルフNo→→　　",OtherVari[0].global_ulfnum)
+        print("/odaihaishinnai content2.ulf_flg-->",content2.ulf_flg)
 
-    all_vote_num = 0
-    max_vote_num = 0
-    for member in MemberList_DB:
-        all_vote_num = all_vote_num + member.vote_num #現在の投票総数をカウント
-        if max_vote_num < member.vote_num:
-            max_vote_num =  member.vote_num
-
-
-    if all_vote_num ==  listsize:
-        if  MemberList_DB[OtherVari[0].global_ulfnum-1].vote_num == max_vote_num:
-            game_result = 1 #　ウルフが最多得票(市民の勝ち)
+        if  content2.ulf_flg == 1:
+            wordtheme = OtherVari[0].word_ulf #ウルフのときのお題配信処理
         else:
-            game_result = 2 #　他市民が最多得票(ウルフの勝ち)
+            wordtheme = OtherVari[0].word_shimin #市民のときのお題配信処理
+
+
+        return render_template('odai.html',MemberList_DB = MemberList_DB,wordtheme = wordtheme,myname = myname,quest1 =  OtherVari[0].quest1,quest2 =  OtherVari[0].quest2,quest3 =  OtherVari[0].quest3,quest4 =  OtherVari[0].quest4,quest5 =  OtherVari[0].quest5)
+
+
     else:
-        game_result = 0 #　まだ全員が投票していない
+        #print("content[0].vote_num",content.vote_num)  #デバッグモード
+        #print("MemberList_DB[0].vote_num",MemberList_DB[0].vote_num)  #デバッグモード
+        content.vote_num = content.vote_num + 1
+        content2 = db.session.query(MemberList).filter_by(username = myname).first()
+        #print("content---->",content)
+        #print("content2---->",content2)
+        
+        content2.to_vote = int(content.id) #誰に投票したかを入力
+
+        db.session.commit()
+        #print("content[0].vote_num コミット後",content.vote_num)  #デバッグモード
+
+        OtherVari = db2.session.query(OtherVar).all()
+        ulf_of_name = MemberList_DB[OtherVari[0].global_ulfnum-1].username #ウルフの人の名前を代入
+        word_shimin=OtherVari[0].word_shimin
+        word_ulf=OtherVari[0].word_ulf
+        
+        ## 勝利判別
+        listsize  = len(MemberList_DB) #全体人数を取得する
+
+        all_vote_num = 0
+        max_vote_num = 0
+        for member in MemberList_DB:
+            all_vote_num = all_vote_num + member.vote_num #現在の投票総数をカウント
+            if max_vote_num < member.vote_num:
+                max_vote_num =  member.vote_num
 
 
-    print("resu-------> ",game_result)
-    
-    return render_template('vote_result.html',MemberList_DB = MemberList_DB, word_shimin = word_shimin,word_ulf =word_ulf,myname = myname, game_result = game_result)
+        if all_vote_num ==  listsize:
+            if  MemberList_DB[OtherVari[0].global_ulfnum-1].vote_num == max_vote_num:
+                game_result = 1 #　ウルフが最多得票(市民の勝ち)
+            else:
+                game_result = 2 #　他市民が最多得票(ウルフの勝ち)
+        else:
+            game_result = 0 #　まだ全員が投票していない
+
+
+        print("resu-------> ",game_result)
+        
+        return render_template('vote_result.html',MemberList_DB = MemberList_DB, word_shimin = word_shimin,word_ulf =word_ulf,myname = myname, game_result = game_result)
 
 
 ## ゲーム継続　→　メンバー一覧ページ　
@@ -397,15 +405,6 @@ def vote_result():
 def game_repeat():
 
     #リセット処理のため（継続のため）
-    global word_data #wordデータ格納用リセット
-    word_data = []
-    global word_num  #wordを選択番号
-    word_num = 0
-    global global_ulfnum
-    global_ulfnum = 0
-    global genre_number
-    genre_number = 0
-    
     myname = session.get('username')
     MemberList_DB = db.session.query(MemberList).all()
     
@@ -419,8 +418,6 @@ def game_repeat():
     db.session.commit()
 
     OtherVari = db2.session.query(OtherVar).all()
-
-    
     db2.session.query(OtherVar).delete() #OtherVarを削除 
     db2.session.commit()
 
@@ -452,7 +449,6 @@ def memberlist_prepare():
     
     myname = session.get('username')
     MemberList_DB = db.session.query(MemberList).all()
-
     OtherVari = db2.session.query(OtherVar).all()
     
     
@@ -499,9 +495,6 @@ def result():
             game_result = 2 #　他市民が最多得票(ウルフの勝ち)
     else:
         game_result = 0 #　まだ全員が投票していない
-
-
-    print("resu-------> ",game_result)
 
     return render_template('vote_result.html',MemberList_DB =MemberList_DB,word_shimin = word_shimin,word_ulf = word_ulf,myname = myname, game_result = game_result)
 

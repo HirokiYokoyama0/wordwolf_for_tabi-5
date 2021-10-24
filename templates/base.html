@@ -6,35 +6,14 @@
         <title>ワードウルフへようこそ</title>
     </head>
     <body>
-        <nav class="navbar navbar-expand-lg navbar-light bg-light">
-            <a class="navbar-brand" href="{{ url_for('main') }}">Main</a>
-            <a class="navbar-brand" href="{{ url_for('load_member_list') }}">参加メンバ一覧(更新)</a>
-            <a class="navbar-brand" href="{{ url_for('memberlist_prepare') }}">お題割り振り</a>
-            <a class="navbar-brand" href="{{ url_for('result') }}">投票結果(更新)</a>
-            <a class="navbar-brand" href="{{ url_for('terms_of_service') }}">利用規約</a>
+        <nav class="navbar  navbar-dark bg-info">
+            <div class="container-md">
+                <a class="navbar-brand pl-3" href="/" style="font-size: 2rem;">TABIFLEEEEK ワードウルフゲームの会</a>
+            </div>
         </nav>
-
-    
-        <div class="jumbotron">
-            <h3>　TABIFLEEEEK ワードウルフゲームの会　</h3>
-        </div>                                 
-        
-
         <div class="container">
             {% block content %}
             {% endblock %}
         </div>
-
-        <div style="text-align: left">
-            <img src="../static/image/wordwolf_tabifleek.jpg" alt="ウルフ✗">
-            <br>
-            Planning by S.U
-            <br>
-            Planning by S.K
-            <br>
-            created by H.Y
-        </div>
-
-
     </body>
 </html>
