@@ -9,10 +9,10 @@
       <div class="card-body">
           <h5 class="card-title">投票結果</h5>
           <h6 class="card-subtitle mb-2 text-muted">あなたのユーザ名は　{{myname}}　です </h6>
-          {% if  game_result %}
+          {% if  game_result == 0 %}
             <p class="card-text">まだ全員の投票が終わっていない状態です。みんなが投票した段階で下の投票結果（更新）ボタンをクリックしてください)</p>
 
-          {% elif game_result ==1 %}
+          {% elif game_result == 1 %}
             今回のゲームは、
             <p><font color="blue" size="6" > 市民の勝ち</font></p>
           {% else %}
@@ -23,15 +23,15 @@
           <p>
             {% for member in MemberList_DB %}
             　{# {{loop.index}}番目の #}
-              ＊＊＊ さん　          {{ member.vote_num }} 票
-              投票したのは　
+              {# ＊＊＊ さん　          {{ member.vote_num }} 票  #}
+            
               {% for member2 in MemberList_DB %}
                 {% if  member.id ==  member2.to_vote  %}
-                  {{ member2.username }} さん　
+                現在、投票しているのは{{ member2.username }} さん　<br>
                 {% endif %}
               {% endfor %}
             {% endfor %}
-            </p>
+            
           {% else %}
             <p> 投票結果 </p>
             <!--コメントアウト
@@ -39,15 +39,20 @@
             -->
             {% for member in MemberList_DB %}
               {# {{loop.index}}番目の #}
-          　   {{ member.username }} さん　          {{ member.vote_num }} 票
+          　   {{ member.username }} さん　への          {{ member.vote_num }} 票　<br>
             {% endfor %}
-            　      今回のウルフの人は
+                
+            　     
             {% for member3 in MemberList_DB %}
               {% if  member3.ulf_flg ==  1  %}
-                <strong> {{ member3.username}} </strong> さん
+              <br>今回のウルフの人は
+              <font color="red"size="5" ><strong> {{ member3.username}} </strong></font> さん
+              でした！
               {% endif %}
             {% endfor %}
-            でした！
+            
+            <br>
+            <br>
             <br>
             <br>
             <p>ウルフの人のワード　===> {{word_ulf}}</p>
