@@ -1,34 +1,36 @@
 {% extends 'base.html' %}
 {% block content %}
-<p> 私のユーザ名は　{{myname}}　です </p>
 
-
-<p>あなたのお題・テーマ　<strong><h2> {{wordtheme}} </h2></strong> です</p>
-
-<p><u>話題・質問の例</u>　　(下記のような抽象的な質問をメンバーに投げかけてみてください。)</p>
-"{{quest1}}"<br>
-"{{quest2}}"<br>
-"{{quest3}}"<br>
-"{{quest4}}"<br>
-"{{quest5}}"<br>
-<br><br><br><br>
-
-
-<p>ウルフだと思う人を下記から選択してください。
-(親から合図があるまでは投票しないでください)</p>
-<form action="/vote" method="POST" enctype="multipart/form-data">
-    <select name="sel">
-        <option value="null" disabled selected>選択して下さい</option>
-        {% for member in MemberList_DB %}
-        <option value= {{member.username}}>{{member.username}}</option>
-        {% endfor %}
-    </select>
-    <div>
-        <input type="submit" value="送信">
+<div class="py-5">
+    <div class="card" style="width: 30rem;">
+        <div class="card-body">
+            <h5 class="card-title">お題配信</h5>
+            <h6 class="card-subtitle mb-2 text-muted">あなたのユーザ名は　{{myname}}　です </h6>
+            <p>あなたのお題は　<strong><h2> {{wordtheme}} </h2></strong> です</p>
+            <p><u>話題・質問の例</u>　(下記のような抽象的な質問をメンバーに投げかけてみてください。)</p>
+            <p>"{{quest1}}"</p>
+            <p>"{{quest2}}"</p>
+            <p>"{{quest3}}"</p>
+            <p>"{{quest4}}"</p>
+            <p>"{{quest5}}"</p>
+        </div>
     </div>
+</div>
 
-
-</form>
-
+<div class="pb-5">
+    <p>ウルフだと思う人を下記から選択してください。
+    (親から合図があるまでは投票しないでください)</p>
+    <form action="/vote" method="POST" enctype="multipart/form-data">
+        <select name="sel" required>
+            <option value="null" disabled selected>選択して下さい</option>
+            {% for member in MemberList_DB %}
+            <option value= {{member.username}}>{{member.username}}</option>
+            {% endfor %}
+        </select>
+        <div>
+            <input class="submit-button btn-primary btn-sm" type="submit" value="投票">
+        </div>
+    </form>
+</div>
 
 {% endblock %}

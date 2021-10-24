@@ -1,34 +1,31 @@
 {% extends 'base.html' %}
 {% block content %}
-
-<p> 私のユーザ名は　{{myname}}　です</p>
-
-<p>お題を配ります。自分の名前のボタンを押してください</p>
-
-
-{% for member in MemberList_DB %}
-    {% if flg_none == '1' %}
-    <p>
-         {{ loop.index }} .  {{ member.username }}  さん　↓
-                <form action="/odaihaishin" method="POST">
-                <button type = "submit" name = "action" value = {{ loop.index }} > {{ member.username }} さんのお題をみる</button>
-                </form>
-    </p>
-
-    {% elif member.username == myname %}
-    <p>
-        {{ loop.index }} .  {{ member.username }}  さん　↓
-               <form action="/odaihaishin" method="POST">
-               <button type = "submit" name = "action" value = {{ loop.index }} > {{ member.username }} さんのお題をみる</button>
-               </form>
-   </p>
-    {% else %}
-    
-    
-    
-    {% endif %}
-
-{% endfor %}
-
+<div class="py-5">
+    <div class="card" style="width: 30rem;">
+        <div class="card-body">
+            <h5 class="card-title">お題配信</h5>
+            <h6 class="card-subtitle mb-2 text-muted">あなたのユーザ名は　{{myname}}　です </h6>
+            <p>お題を配ります。自分の名前のボタンを押してください</p>
+            {% for member in MemberList_DB %}
+                {% if flg_none == '1' %}
+                <p>
+                    {{ loop.index }} .  {{ member.username }}  さん　↓
+                        <form action="/odaihaishin" method="POST">
+                            <button type = "submit" name = "action" value = {{ loop.index }} > {{ member.username }} さんのお題をみる</button>
+                        </form>
+                </p>
+                {% elif member.username == myname %}
+                <p>
+                    {{ loop.index }} .  {{ member.username }}  さん　↓
+                        <form action="/odaihaishin" method="POST">
+                            <button type = "submit" name = "action" value = {{ loop.index }} > {{ member.username }} さんのお題をみる</button>
+                        </form>
+                </p>
+                {% else %}
+                {% endif %}
+            {% endfor %}
+        </div>
+    </div>
+</div>
 
 {% endblock %}
