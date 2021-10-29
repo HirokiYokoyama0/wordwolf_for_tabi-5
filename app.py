@@ -104,7 +104,6 @@ def main():
 
     debug_memberlist = MemberList.query.all()#debug_DBチェック用
     debug_OtherVar = OtherVar.query.all()#debug_DBチェック用
-    print(debug_memberlist)
 
     return render_template('main.html',checkflg = checkflg,debug_memberlist=debug_memberlist,debug_OtherVar=debug_OtherVar)#debug用リストのポスト機能追加
 
