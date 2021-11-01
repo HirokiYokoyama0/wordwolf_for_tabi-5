@@ -4,7 +4,7 @@ import os
 
 def create_word_TF(GENRUNUM):
     
-    workbook = openpyxl.load_workbook(os.path.dirname(os.path.abspath(__file__))+'/ワードウルフ単語_TF2.xlsx')
+    workbook = openpyxl.load_workbook(os.path.dirname(os.path.abspath(__file__))+'/ワードウルフ単語_TF3.xlsx')
     sheet = workbook["General"]
     max_row_num = sheet.max_row
     word_data = []
@@ -35,13 +35,13 @@ def create_word_TF(GENRUNUM):
   
 def check_genre():
 
-    workbook = openpyxl.load_workbook(os.path.dirname(os.path.abspath(__file__))+'/ワードウルフ単語_TF2.xlsx')
+    workbook = openpyxl.load_workbook(os.path.dirname(os.path.abspath(__file__))+'/ワードウルフ単語_TF3.xlsx')
     sheet = workbook["General"]
     max_row_num = sheet.max_row
     genre_data = []
 
     
-    for k in range(2,16):##ここは可変にすべき
+    for k in range(2,18):##ここは可変にすべき
         genre = sheet.cell(row=k, column=1).value
         genre_data.append(genre)
 

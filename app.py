@@ -1,3 +1,4 @@
+from flask.scaffold import _endpoint_from_view_func
 from worddata_Excel_tabiF_FC import create_word_TF,check_genre
 from flask import Flask, render_template, redirect, url_for,request,g
 from flask.globals import session
@@ -156,7 +157,11 @@ def reset2():
     # データベースからユーザ情報を削除
     myname = session.get('username')
     content2 = db.session.query(MemberList).filter_by(username = myname).first()
-    db.session.delete(content2)
+    
+    print("content2----->",content2)
+    if content2 != None: # content2が中身があったときのみ削除する
+        db.session.delete(content2)
+    
     db.session.commit()
 
     # セッション情報があれば削除

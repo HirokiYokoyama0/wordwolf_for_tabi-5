@@ -11,7 +11,7 @@
       <h5 class="card-title">参加者リスト</h5>
       <h6 class="card-subtitle mb-2 text-muted">あなたのユーザ名は　{{myname}}　です </h6>
       <p class="card-text">現在の参加メンバーは以下の通りです。</p>
-      <p class="card-text">準備ができたら。名前の横のボタンを押してください。</p>
+      <p class="card-text">準備ができたら、名前の横のボタンを押してください。</p>
       {% for member in MemberList_DB %}
       <p>
           <div style="display:inline-flex">
@@ -59,7 +59,8 @@
 
 </div>
 {% else %}
-  <p>※まだ全員が準備ができていない状態です。準備ができたら、上部の<u>参加メンバ一覧(更新)</u>のリンクをクリックしてください。</p>
+  <p>※まだ全員が準備ができていない状態です。<br>
+    時間をあけて、上部の<u>参加メンバ一覧(更新)</u>のボタンをクリックしてください。</p>
 {% endif %}
 
 {% endblock %}
