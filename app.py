@@ -1,4 +1,4 @@
-from flask.scaffold import _endpoint_from_view_func
+#from flask.scaffold import _endpoint_from_view_func
 from worddata_Excel_tabiF_FC import create_word_TF,check_genre
 from flask import Flask, render_template, redirect, url_for,request,g
 from flask.globals import session
@@ -229,7 +229,6 @@ def memberlist_check():
     debug_OtherVar = OtherVar.query.all()#debug_DBチェック用
 
     return render_template('member_list.html',MemberList_DB=MemberList_DB,myname = myname, word_Genre = word_Genre,flg_start = flg_start,debug_memberlist =debug_memberlist ,debug_OtherVar = debug_OtherVar)
-    
 
 
 @app.route("/prepare",methods=["post"]) # 開始準備確認/＊＊親だけが実行する処理
@@ -246,7 +245,7 @@ def odai_warifuri():
 
     ulfnum = int(request.form.get('number_wolf')) #ウルフの数を取得する
     listsize  = len(MemberList_DB) #全体人数を取得する
-   
+
     OtherVari = db2.session.query(OtherVar).all()
 
     if len(OtherVari) == 0: #この処理は一回しかできないようにする
@@ -352,6 +351,7 @@ def odai_haishin():
 ## 投票結果 
 @app.route('/vote', methods=['POST']) 
 def vote_result():
+
     print(request.form.get('sel'))
     myname = session.get('username')
     MemberList_DB = db.session.query(MemberList).all() #DBからメンバーリストを割り当てる
@@ -416,7 +416,7 @@ def vote_result():
 
 
         print("resu-------> ",game_result)
-        
+
         debug_memberlist = MemberList.query.all()#debug_DBチェック用
         debug_OtherVar = OtherVar.query.all()#debug_DBチェック用
 
@@ -430,7 +430,7 @@ def game_repeat():
     #リセット処理のため（継続のため）
     myname = session.get('username')
     MemberList_DB = db.session.query(MemberList).all()
-    
+
     for member in MemberList_DB:
         member.vote_num=0
         member.ulf_flg=0
@@ -532,7 +532,7 @@ def result():
 
     debug_memberlist = MemberList.query.all()#debug_DBチェック用
     debug_OtherVar = OtherVar.query.all()#debug_DBチェック用
-    
+
 
     return render_template('vote_result.html',MemberList_DB =MemberList_DB,word_shimin = word_shimin,word_ulf = word_ulf,myname = myname, game_result = game_result,debug_memberlist =debug_memberlist ,debug_OtherVar = debug_OtherVar)
 
