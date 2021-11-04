@@ -4,71 +4,84 @@
 <!--コメントアウト
 <meta http-equiv="refresh" content="6;URL={{ url_for('result') }}">
 -->
+{% if  game_result == 0 %}
 <div class="py-5">
   <div class="card" style="width: 30rem;">
       <div class="card-body">
           <h5 class="card-title">投票結果</h5>
           <h6 class="card-subtitle mb-2 text-muted">あなたのユーザ名は　{{myname}}　です </h6>
-          {% if  game_result == 0 %}
+          <div class="pb-3">
             <p class="card-text">まだ全員の投票が終わっていない状態です。みんなが投票した段階で下の投票結果（更新）ボタンをクリックしてください)</p>
-
-          {% elif game_result == 1 %}
-            今回のゲームは、
-            <p><font color="blue" size="6" > 市民の勝ち</font></p>
-          {% else %}
-            今回のゲームは、
-            <p><font color="red"size="6" > ウルフの勝ち</font></p>
-          {% endif %}
-          {% if game_result ==　0 %}
-          <p>
+          </div>
+            <div class="pb-1">
             {% for member in MemberList_DB %}
             　{# {{loop.index}}番目の #}
               {# ＊＊＊ さん　          {{ member.vote_num }} 票  #}
-            
+
               {% for member2 in MemberList_DB %}
                 {% if  member.id ==  member2.to_vote  %}
                 現在、投票しているのは{{ member2.username }} さん　<br>
                 {% endif %}
               {% endfor %}
             {% endfor %}
-            
-          {% else %}
+            </div>
+    </div>
+  </div>
+</div>
+
+<div class="pb-5">
+    <a class="btn btn-primary btn-sm" href="{{ url_for('result') }}" role="button">投票結果(更新)</a>
+</div>
+
+{% else %}
+<div class="py-5">
+  <div class="card" style="width: 30rem;">
+      <div class="card-body">
+          <h5 class="card-title">投票結果</h5>
+          <h6 class="card-subtitle mb-2 text-muted">あなたのユーザ名は　{{myname}}　です. </h6>
+
+          <div class="py-3">
+          {% if game_result == 1 %}
+            今回のゲームは、
+            <p><font color="blue" size="6" > 市民の勝ち</font></p>
+          {% elif game_result == 2 %}
+            今回のゲームは、
+            <p><font color="red"size="6" > ウルフの勝ち</font></p>
+          {% endif %}
+          </div>
+          <div class="pb-3">
             <p> 投票結果 </p>
             <!--コメントアウト
             <p>配列：{{ member_vote_list|e }}</p> 
             -->
             {% for member in MemberList_DB %}
               {# {{loop.index}}番目の #}
-          　   {{ member.username }} さん　への          {{ member.vote_num }} 票　<br>
+               {{ member.username }} さん　         {{ member.vote_num }} 票　<br>
             {% endfor %}
-                
-            　     
-            {% for member3 in MemberList_DB %}
-              {% if  member3.ulf_flg ==  1  %}
-              <br>今回のウルフの人は
-              <font color="red"size="5" ><strong> {{ member3.username}} </strong></font> さん
-              でした！
-              {% endif %}
-            {% endfor %}
-            
-            <br>
-            <br>
-            <br>
-            <br>
-            <p>ウルフの人のワード　===> {{word_ulf}}</p>
-            <p>市民の人のワード　　===> {{word_shimin}}</p>
-            <br>
-      {% endif %}
+          </div>
+
+            <div class="pb-3">
+              {% for member3 in MemberList_DB %}
+                {% if  member3.ulf_flg ==  1  %}
+
+                  <br>今回のウルフの人は
+                  <font color="red"size="5" ><strong> {{ member3.username}} </strong></font> さん
+                  でした！
+                {% endif %}
+              {% endfor %}
+            </div>
+
+            <div class="pb-1">
+              <p>ウルフの人のワード　===> {{word_ulf}}</p>
+              <p>市民の人のワード　　===> {{word_shimin}}</p>
+            </div>
     </div>
   </div>
 </div>
 
 <div class="pb-5">
-  {% if game_result ==　0 %}
-    <a class="btn btn-primary btn-sm" href="{{ url_for('result') }}" role="button">投票結果(更新)</a>
-  {% else %}
     <a class="btn btn-primary btn-sm" href="{{ url_for('game_repeat')}}" role="button">同じメンバーで続ける</a>
-  {% endif %}
 </div>
+{% endif %}
 
 {% endblock %}

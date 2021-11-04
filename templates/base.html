@@ -20,6 +20,71 @@
         <div class="container">
             {% block content %}
             {% endblock %}
+
+
+            <p>debug_mode</p>
+            <td>Member_list</td>
+            <table class="table table-hover">
+            <thead>
+                <tr>
+                    <th>id</th>
+                    <th>username</th>
+                    <th>comment</th>
+                    <th>vote_num</th>
+                    <th>ulf_flg</th>
+                    <th>to_vote</th>
+                    <th>to_vote2</th>
+                    <th>prepare_flg</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for post in debug_memberlist %}
+                <tr>
+                    <td>{{ post.id}}</td>
+                    <td>{{ post.username}}</td>
+                    <td>{{ post.comment }}</td>
+                    <td>{{ post.vote_num }}</td>
+                    <td>{{ post.ulf_flg }}</td>
+                    <td>{{ post.to_vote }}</td>
+                    <td>{{ post.to_vote2 }}</td>
+                    <td>{{ post.prepare_flg }}</td>
+                </tr>
+                {% else %}
+                <td>DBが登録されていません</td>
+                {% endfor %}
+            </tbody>
+            </table>
+            
+            <td>OtherVar</td>
+            <table class="table table-hover">
+            <thead>
+                <tr>
+                    <th>id</th>
+                    <th>word_num</th>
+                    <th>global_ulfnum</th>
+                    <th>wolf_number</th>
+                    <th>genre_number</th>
+                    <th>word_ulf</th>
+                    <th>word_shimin</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for post in debug_OtherVar %}
+                <tr>
+                    <td>{{ post.id}}</td>
+                    <td>{{ post.word_num}}</td>
+                    <td>{{ post.global_ulfnum }}</td>
+                    <td>{{ post.wolf_number }}</td>
+                    <td>{{ post.genre_number}}</td>
+                    <td>{{ post.word_ulf }}</td>
+                    <td>{{ post.word_shimin}}</td>
+                </tr>
+                {% else %}
+                <td>DBが登録されていません</td>
+                {% endfor %}
+            </tbody>
+            </table>
+
         </div>
     </body>
 </html>

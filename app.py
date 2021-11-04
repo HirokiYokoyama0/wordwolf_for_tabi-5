@@ -1,4 +1,4 @@
-from flask.scaffold import _endpoint_from_view_func
+#from flask.scaffold import _endpoint_from_view_func
 from worddata_Excel_tabiF_FC import create_word_TF,check_genre
 from flask import Flask, render_template, redirect, url_for,request,g
 from flask.globals import session
@@ -92,7 +92,7 @@ class OrignalGenreData(db3.Model):
         return f"{self.GenreData}"
 
 
-@app.route('/') # メインページ
+@app.route('/') 
 def main():
     myname = session.get('username')
 
@@ -103,7 +103,10 @@ def main():
         checkflg = 1
 
 
-    return render_template('main.html',checkflg = checkflg)
+    debug_memberlist = MemberList.query.all()#debug_DBチェック用
+    debug_OtherVar = OtherVar.query.all()#debug_DBチェック用
+
+    return render_template('main.html',checkflg = checkflg,debug_memberlist=debug_memberlist,debug_OtherVar=debug_OtherVar)#debug用リストのポスト機能追加
 
 
 @app.route("/index",methods=["post"])
@@ -138,15 +141,20 @@ def post():
             db3.session.add(new_data)
     
         db3.session.commit()
-     #### この処理は一回しかやらない ####
 
+    #### この処理は一回しかやらない ####
     word_Genre = db3.session.query(OrignalGenreData).all()
-    return render_template('member_list.html',MemberList_DB = MemberList_DB, val = 0 , myname = myname  ,word_Genre = word_Genre ,flg_start = 0)
+
+
+    debug_memberlist = MemberList.query.all()#debug_DBチェック用
+    debug_OtherVar = OtherVar.query.all()#debug_DBチェック用
+
+    return render_template('member_list.html',MemberList_DB = MemberList_DB, val = 0 , myname = myname  ,word_Genre = word_Genre ,flg_start = 0,debug_memberlist=debug_memberlist,debug_OtherVar=debug_OtherVar)#debug用リストのポスト機能追加
 
 @app.route('/reset2',methods=["post"]) # 自分のユーザ情報を削除
 def reset2():
    
-   # データベースからユーザ情報を削除
+    # データベースからユーザ情報を削除
     myname = session.get('username')
     content2 = db.session.query(MemberList).filter_by(username = myname).first()
     
@@ -161,29 +169,35 @@ def reset2():
         session.pop('username', None)
         
     session.clear
-    
-    return render_template('main.html')
+
+    debug_memberlist = MemberList.query.all()#debug_DBチェック用
+    debug_OtherVar = OtherVar.query.all()#debug_DBチェック用
+
+    return render_template('main.html' ,debug_memberlist =debug_memberlist ,debug_OtherVar = debug_OtherVar)
 
 
 @app.route('/reset1',methods=["post"]) # リセット
 def reset1():
-   
-   if "username" in session:  # セッション情報があれば削除
+    
+    if "username" in session:  # セッション情報があれば削除
         session.pop('username', None)
 
-   session.clear
+    session.clear
 
-   #リセット処理のため
-   db.session.query(MemberList).delete() #メンバーリストを削除 
-   db.session.commit()
+    #リセット処理のため
+    db.session.query(MemberList).delete() #メンバーリストを削除 
+    db.session.commit()
 
-   db2.session.query(OtherVar).delete() #OtherVarを削除 
-   db2.session.commit()
+    db2.session.query(OtherVar).delete() #OtherVarを削除 
+    db2.session.commit()
 
-   db3.session.query(OrignalGenreData).delete() #OtherVarを削除 
-   db3.session.commit()
+    db3.session.query(OrignalGenreData).delete() #OtherVarを削除 
+    db3.session.commit()
 
-   return render_template('main.html')
+    debug_memberlist = MemberList.query.all()#debug_DBチェック用
+    debug_OtherVar = OtherVar.query.all()#debug_DBチェック用
+
+    return render_template('main.html' ,debug_memberlist =debug_memberlist ,debug_OtherVar = debug_OtherVar)
 
 
 
@@ -191,7 +205,7 @@ def reset1():
 @app.route('/memberlist_check',methods=['POST'])
 def memberlist_check():
 
-    
+
     btnid = request.form['BtnID']
     print(" btnid------->",btnid)
 
@@ -210,9 +224,11 @@ def memberlist_check():
             break
 
     word_Genre = db.session.query(OrignalGenreData).all()
-
-    return render_template('member_list.html',MemberList_DB=MemberList_DB,myname = myname, word_Genre = word_Genre,flg_start = flg_start)
     
+    debug_memberlist = MemberList.query.all()#debug_DBチェック用
+    debug_OtherVar = OtherVar.query.all()#debug_DBチェック用
+
+    return render_template('member_list.html',MemberList_DB=MemberList_DB,myname = myname, word_Genre = word_Genre,flg_start = flg_start,debug_memberlist =debug_memberlist ,debug_OtherVar = debug_OtherVar)
 
 
 @app.route("/prepare",methods=["post"]) # 開始準備確認/＊＊親だけが実行する処理
@@ -229,7 +245,7 @@ def odai_warifuri():
 
     ulfnum = int(request.form.get('number_wolf')) #ウルフの数を取得する
     listsize  = len(MemberList_DB) #全体人数を取得する
-   
+
     OtherVari = db2.session.query(OtherVar).all()
 
     if len(OtherVari) == 0: #この処理は一回しかできないようにする
@@ -303,33 +319,39 @@ def odai_warifuri():
     else:
         print("子が実施ボタンを押してしまったのでは---->",OtherVari) 
     
-    return render_template('member_list_prepare.html', MemberList_DB = MemberList_DB, myname = myname , flg_none = flg_none )
+    debug_memberlist = MemberList.query.all()#debug_DBチェック用
+    debug_OtherVar = OtherVar.query.all()#debug_DBチェック用
+    
+    return render_template('member_list_prepare.html', MemberList_DB = MemberList_DB, myname = myname , flg_none = flg_none ,debug_memberlist =debug_memberlist ,debug_OtherVar = debug_OtherVar)
 
 
- ## お題配信する
+## お題配信する
 @app.route("/odaihaishin",methods=["post"])
 def odai_haishin():
 
-     myname = session.get('username')
-     MemberList_DB = db.session.query(MemberList).all() #DBからメンバーリストを割り当てる
-     OtherVari = db2.session.query(OtherVar).all()
+    myname = session.get('username')
+    MemberList_DB = db.session.query(MemberList).all() #DBからメンバーリストを割り当てる
+    OtherVari = db2.session.query(OtherVar).all()
 
-     content2 = db.session.query(MemberList).filter_by(username = myname).first()
+    content2 = db.session.query(MemberList).filter_by(username = myname).first()
 
-     print("/odaihaishinnai ウルフNo→→　　",OtherVari[0].global_ulfnum)
-     print("/odaihaishinnai content2.ulf_flg-->",content2.ulf_flg)
-  
-     if  content2.ulf_flg == 1:
+    print("/odaihaishinnai ウルフNo→→　　",OtherVari[0].global_ulfnum)
+    print("/odaihaishinnai content2.ulf_flg-->",content2.ulf_flg)
+
+    if  content2.ulf_flg == 1:
             wordtheme = OtherVari[0].word_ulf #ウルフのときのお題配信処理
-     else:                                       
+    else:
             wordtheme = OtherVari[0].word_shimin #市民のときのお題配信処理
 
+    debug_memberlist = MemberList.query.all()#debug_DBチェック用
+    debug_OtherVar = OtherVar.query.all()#debug_DBチェック用
 
-     return render_template('odai.html',MemberList_DB = MemberList_DB,wordtheme = wordtheme,myname = myname,quest1 =  OtherVari[0].quest1,quest2 =  OtherVari[0].quest2,quest3 =  OtherVari[0].quest3,quest4 =  OtherVari[0].quest4,quest5 =  OtherVari[0].quest5)
+    return render_template('odai.html',MemberList_DB = MemberList_DB,wordtheme = wordtheme,myname = myname,quest1 =  OtherVari[0].quest1,quest2 =  OtherVari[0].quest2,quest3 =  OtherVari[0].quest3,quest4 =  OtherVari[0].quest4,quest5 =  OtherVari[0].quest5 ,debug_memberlist =debug_memberlist ,debug_OtherVar = debug_OtherVar)
 
 ## 投票結果 
 @app.route('/vote', methods=['POST']) 
 def vote_result():
+
     print(request.form.get('sel'))
     myname = session.get('username')
     MemberList_DB = db.session.query(MemberList).all() #DBからメンバーリストを割り当てる
@@ -349,8 +371,10 @@ def vote_result():
         else:
             wordtheme = OtherVari[0].word_shimin #市民のときのお題配信処理
 
+        debug_memberlist = MemberList.query.all()#debug_DBチェック用
+        debug_OtherVar = OtherVar.query.all()#debug_DBチェック用
 
-        return render_template('odai.html',MemberList_DB = MemberList_DB,wordtheme = wordtheme,myname = myname,quest1 =  OtherVari[0].quest1,quest2 =  OtherVari[0].quest2,quest3 =  OtherVari[0].quest3,quest4 =  OtherVari[0].quest4,quest5 =  OtherVari[0].quest5)
+        return render_template('odai.html',MemberList_DB = MemberList_DB,wordtheme = wordtheme,myname = myname,quest1 =  OtherVari[0].quest1,quest2 =  OtherVari[0].quest2,quest3 =  OtherVari[0].quest3,quest4 =  OtherVari[0].quest4,quest5 =  OtherVari[0].quest5,debug_memberlist =debug_memberlist ,debug_OtherVar = debug_OtherVar)
 
 
     else:
@@ -381,7 +405,7 @@ def vote_result():
             if max_vote_num < member.vote_num:
                 max_vote_num =  member.vote_num
 
-
+        print(max_vote_num)
         if all_vote_num ==  listsize:
             if  MemberList_DB[OtherVari[0].global_ulfnum-1].vote_num == max_vote_num:
                 game_result = 1 #　ウルフが最多得票(市民の勝ち)
@@ -392,8 +416,11 @@ def vote_result():
 
 
         print("resu-------> ",game_result)
-        
-        return render_template('vote_result.html',MemberList_DB = MemberList_DB, word_shimin = word_shimin,word_ulf =word_ulf,myname = myname, game_result = game_result)
+
+        debug_memberlist = MemberList.query.all()#debug_DBチェック用
+        debug_OtherVar = OtherVar.query.all()#debug_DBチェック用
+
+        return render_template('vote_result.html',MemberList_DB = MemberList_DB, word_shimin = word_shimin,word_ulf =word_ulf,myname = myname, game_result = game_result,debug_memberlist =debug_memberlist ,debug_OtherVar = debug_OtherVar)
 
 
 ## ゲーム継続　→　メンバー一覧ページ　
@@ -403,7 +430,7 @@ def game_repeat():
     #リセット処理のため（継続のため）
     myname = session.get('username')
     MemberList_DB = db.session.query(MemberList).all()
-    
+
     for member in MemberList_DB:
         member.vote_num=0
         member.ulf_flg=0
@@ -418,8 +445,11 @@ def game_repeat():
     db2.session.commit()
 
     word_Genre = db3.session.query(OrignalGenreData).all()  
+    
+    debug_memberlist = MemberList.query.all()#debug_DBチェック用
+    debug_OtherVar = OtherVar.query.all()#debug_DBチェック用
 
-    return render_template('member_list.html',MemberList_DB=MemberList_DB,myname = myname, word_Genre = word_Genre,flg_start=0)
+    return render_template('member_list.html',MemberList_DB=MemberList_DB,myname = myname, word_Genre = word_Genre,flg_start=0,debug_memberlist =debug_memberlist ,debug_OtherVar = debug_OtherVar)
 
 
 ## メンバー一覧ページ　
@@ -437,7 +467,10 @@ def load_member_list():
 
     word_Genre = db.session.query(OrignalGenreData).all()
 
-    return render_template('member_list.html',MemberList_DB=MemberList_DB,myname = myname, word_Genre = word_Genre,flg_start = flg_start)
+    debug_memberlist = MemberList.query.all()#debug_DBチェック用
+    debug_OtherVar = OtherVar.query.all()#debug_DBチェック用
+
+    return render_template('member_list.html',MemberList_DB=MemberList_DB,myname = myname, word_Genre = word_Genre,flg_start = flg_start,debug_memberlist=debug_memberlist,debug_OtherVar =debug_OtherVar)
 
 ## お題割り振りページ　（親以外のリンク用）
 @app.route('/memberlist_prepare')
@@ -459,7 +492,11 @@ def memberlist_prepare():
         print("まだ親の人が開始ボタンを教えていません")
         return redirect(url_for('load_member_list'))
     else:
-        return render_template('member_list_prepare.html',MemberList_DB = MemberList_DB,myname = myname,flg_none = flg_none)
+        
+        debug_memberlist = MemberList.query.all()#debug_DBチェック用
+        debug_OtherVar = OtherVar.query.all()#debug_DBチェック用
+
+        return render_template('member_list_prepare.html',MemberList_DB = MemberList_DB,myname = myname,flg_none = flg_none,debug_memberlist =debug_memberlist ,debug_OtherVar = debug_OtherVar)
    
 
 ## 投票結果　
@@ -491,8 +528,13 @@ def result():
             game_result = 2 #　他市民が最多得票(ウルフの勝ち)
     else:
         game_result = 0 #　まだ全員が投票していない
+        
 
-    return render_template('vote_result.html',MemberList_DB =MemberList_DB,word_shimin = word_shimin,word_ulf = word_ulf,myname = myname, game_result = game_result)
+    debug_memberlist = MemberList.query.all()#debug_DBチェック用
+    debug_OtherVar = OtherVar.query.all()#debug_DBチェック用
+
+
+    return render_template('vote_result.html',MemberList_DB =MemberList_DB,word_shimin = word_shimin,word_ulf = word_ulf,myname = myname, game_result = game_result,debug_memberlist =debug_memberlist ,debug_OtherVar = debug_OtherVar)
 
 ## 利用規約
 @app.route('/terms') 
