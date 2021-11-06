@@ -94,19 +94,22 @@ class OrignalGenreData(db3.Model):
 
 @app.route('/') 
 def main():
-    myname = session.get('username')
+    #myname = session.get('username')
+    #if myname  is None:
+    #    checkflg = 0
+    #else:
+    #    checkflg = 1
 
-
-    if myname  is None:
-        checkflg = 0
-    else:
-        checkflg = 1
-
+    #メインに戻るときは必ずセッション情報があれば削除する
+    if "username" in session:
+        session.pop('username', None)
+        
+    #session.clear
 
     debug_memberlist = MemberList.query.all()#debug_DBチェック用
     debug_OtherVar = OtherVar.query.all()#debug_DBチェック用
 
-    return render_template('main.html',checkflg = checkflg,debug_memberlist=debug_memberlist,debug_OtherVar=debug_OtherVar)#debug用リストのポスト機能追加
+    return render_template('main.html',checkflg = 0,debug_memberlist=debug_memberlist,debug_OtherVar=debug_OtherVar)#debug用リストのポスト機能追加
 
 
 @app.route("/index",methods=["post"])
@@ -164,11 +167,11 @@ def reset2():
     
     db.session.commit()
 
-    # セッション情報があれば削除
+   # セッション情報があれば削除
     if "username" in session:
         session.pop('username', None)
         
-    session.clear
+    session.clear 
 
     debug_memberlist = MemberList.query.all()#debug_DBチェック用
     debug_OtherVar = OtherVar.query.all()#debug_DBチェック用
@@ -541,10 +544,11 @@ def result():
 def terms_of_service():
     return render_template('terms.html')
 
-## ページが間違うとmain
-@app.errorhandler(404) 
-def redirect_main_page(error):
-    return redirect(url_for('main'))
+## ページが間違うとmain 他ブラウザで始めるとここも必ず通ってしまうので一旦削除
+#@app.errorhandler(404) 
+#def redirect_main_page(error):
+#    print("errorhandle")
+#    return redirect(url_for('main'))
 
 if __name__ == '__main__':
     #db.create_all()
