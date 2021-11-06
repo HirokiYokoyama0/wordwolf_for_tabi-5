@@ -381,13 +381,21 @@ def vote_result():
 
 
     else:
+
         #print("content[0].vote_num",content.vote_num)  #デバッグモード
         #print("MemberList_DB[0].vote_num",MemberList_DB[0].vote_num)  #デバッグモード
-        content.vote_num = content.vote_num + 1
+
+        content2 = db.session.query(MemberList).filter_by(username = myname).first()
+        print("tovote",content2.to_vote)
+
+        if content2.to_vote==0:
+            content.vote_num = content.vote_num + 1
+
         content2 = db.session.query(MemberList).filter_by(username = myname).first()
         #print("content---->",content)
         #print("content2---->",content2)
-        
+
+
         content2.to_vote = int(content.id) #誰に投票したかを入力
 
         db.session.commit()
@@ -397,7 +405,7 @@ def vote_result():
         ulf_of_name = MemberList_DB[OtherVari[0].global_ulfnum-1].username #ウルフの人の名前を代入
         word_shimin=OtherVari[0].word_shimin
         word_ulf=OtherVari[0].word_ulf
-        
+
         ## 勝利判別
         listsize  = len(MemberList_DB) #全体人数を取得する
 
